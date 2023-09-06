@@ -11,7 +11,7 @@
             get
             {
                 //return $"mongodb://{username}:{password}@{host}:{port}";
-                return $"mongodb+srv://{mongoUsername}:{mongoPassword}@{mongoHost}/?retryWrites=true&w=majority";
+                return $"mongodb://{mongoUsername}:{mongoPassword}@{mongoHost}";
             }
         }
     }

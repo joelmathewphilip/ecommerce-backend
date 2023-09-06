@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  ecommerce.catalog.db: 
+    image: mongo
+    container_name: mongo
+  ecommerce.catalog.api:
+    image: ${DOCKER_REGISTRY-}ecommercecatalogapi
+    build:
+      context: .
+      dockerfile: Services/Ecommerce.Catalog.API/Dockerfile
+volumes:
+  mongo_data: 
