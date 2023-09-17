@@ -1,6 +1,3 @@
-using Ecommerce.Catalog.API.Interfaces;
-using Ecommerce.Catalog.API.Repositories;
-using Ecommerce.Catalog.API;
 using MongoDB.Driver;
 using Ecommerce.Account.API.Repository;
 using Ecommerce.Account.API.Interfaces;

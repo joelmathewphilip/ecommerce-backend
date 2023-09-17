@@ -4,10 +4,10 @@ namespace Ecommerce.Catalog.API.Interfaces
 {
     public interface ICatalogItemRepository
     {
-        Task  AddCatalogItemAsync(CatalogItem catalogItem);
+        Task AddCatalogItemAsync(CatalogItem catalogItem);
         Task<CatalogItem?> GetCatalogItemAsync(Guid catalogId);
         Task<IEnumerable<CatalogItem>?> GetCatalogItemsAsync();
         Task DeleteCatalogItemAsync(Guid catalogId);
-        Task UpdateCatalogItemAsync(CatalogItem catalogItem);
+        Task<CatalogItem> UpdateCatalogItemAsync(CatalogItem catalogItem);
     }
 }

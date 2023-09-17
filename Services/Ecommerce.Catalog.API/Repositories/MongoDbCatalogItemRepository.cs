@@ -83,12 +83,14 @@ namespace Ecommerce.Catalog.API.Repositories
 
 
 
-        public async Task UpdateCatalogItemAsync(CatalogItem catalogItem)
+        public async Task<CatalogItem> UpdateCatalogItemAsync(CatalogItem catalogItem)
         {
             try
             {
                 var filter = _filter.Eq(item => item.CatalogId, catalogItem.CatalogId);
-                await _mongoCollection.ReplaceOneAsync(filter, catalogItem);
+                //_mongoCollection.FindOneAndUpdate<CatalogItem>(filter, catalogItem);
+                await _mongoCollection.FindOneAndReplaceAsync(filter, catalogItem);
+                return await GetCatalogItemAsync(catalogItem.CatalogId);
             }
             catch (Exception ex)
             {

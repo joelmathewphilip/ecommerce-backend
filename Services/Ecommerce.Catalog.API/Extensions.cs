@@ -4,7 +4,7 @@ namespace Catalog.API
 {
     public static class Extensions
     {
-        public static CatalogItem asItem (this CatalogItemInsertDto catalogItemDto)
+        public static CatalogItem toItem (this CatalogItemInsertRequestDto catalogItemDto)
         {
             return new CatalogItem()
             {
@@ -13,39 +13,52 @@ namespace Catalog.API
                 CatalogMrp = catalogItemDto.CatalogMrp,
                 CatalogName = catalogItemDto.CatalogName,
                 CatalogType = catalogItemDto.CatalogType,
-                DiscountedPrice = catalogItemDto.DiscountedPrice == null ? catalogItemDto.CatalogMrp : double.Parse(catalogItemDto.DiscountedPrice),
                 CatalogImages = catalogItemDto.CatalogImages,
                 CatalogId = Guid.NewGuid(),
             };
         }
 
-        public static CatalogItem asItem(this CatalogItemUpdateDto catalogItemUpdateDto, CatalogItem oldItem)
+        public static CatalogItem toItem(this CatalogItemUpdateRequestDto catalogItemUpdateDto, CatalogItem oldItem)
         {
             return new CatalogItem()
             {
                 CatalogDescription = catalogItemUpdateDto.CatalogDescription ?? oldItem.CatalogDescription,
-                CatalogMrp = catalogItemUpdateDto.CatalogMrp == null ? oldItem.CatalogMrp : double.Parse(catalogItemUpdateDto.CatalogMrp),
+                CatalogMrp =  catalogItemUpdateDto.CatalogMrp,
                 CatalogName = catalogItemUpdateDto.CatalogName ?? oldItem.CatalogName,
                 CatalogType = catalogItemUpdateDto.CatalogType ?? oldItem.CatalogType,
-                DiscountedPrice = catalogItemUpdateDto.DiscountedPrice == null ? oldItem.CatalogMrp : double.Parse(catalogItemUpdateDto.DiscountedPrice),
                 CatalogImages = catalogItemUpdateDto.CatalogImages ?? oldItem.CatalogImages,
                 CatalogId = oldItem.CatalogId,
                 CatalogDateOfCreation = oldItem.CatalogDateOfCreation
             };
         }
 
-        public static CatalogItemInsertDto asDto(this CatalogItem catalogItem)
+        public static CatalogItemResponseDto toDto(this CatalogItem catalogItem)
         {
-            return new CatalogItemInsertDto()
+            return new CatalogItemResponseDto()
+            {
+                CatalogDescription = catalogItem.CatalogDescription,
+                CatalogDateOfCreation = catalogItem.CatalogDateOfCreation,
+                CatalogMrp = catalogItem.CatalogMrp,
+                CatalogName = catalogItem.CatalogName,
+                CatalogType = catalogItem.CatalogType,
+                DiscountedPrice = catalogItem.DiscountedPrice,
+                CatalogImages = catalogItem.CatalogImages,
+                CatalogId = catalogItem.CatalogId
+            };
+        }
+
+        /*public static CatalogItemUpdateDto toUpdateDto(this CatalogItem catalogItem)
+        {
+            return new CatalogItemUpdateDto()
             {
                 CatalogDescription = catalogItem.CatalogDescription,
                 CatalogMrp = catalogItem.CatalogMrp,
                 CatalogName = catalogItem.CatalogName,
                 CatalogType = catalogItem.CatalogType,
-                DiscountedPrice =catalogItem.DiscountedPrice.ToString(),
+                CatalogDiscountedPrice = catalogItem.DiscountedPrice,
                 CatalogImages = catalogItem.CatalogImages,
                 CatalogId = catalogItem.CatalogId
             };
-        }
+        }*/
     }
 }

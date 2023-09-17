@@ -6,9 +6,8 @@
       "launchUrl": "api/catalog/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5033"
+      }
+      }
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -28,12 +27,6 @@
       },
       "distributionName": ""
     },
-    "Docker": {
-      "commandName": "Docker",
-      "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/api/catalog/v1/swagger",
-      "publishAllPorts": true
-    }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
