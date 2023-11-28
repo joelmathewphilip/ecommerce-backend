@@ -15,11 +15,13 @@ namespace Ecommerce.Catalog.API.Controllers
         private readonly ICatalogItemRepository _repository;
         private readonly ILogger _logger;
         public ControllerError controllerError;
-        public CatalogItemsController(ICatalogItemRepository repository, ILogger<CatalogItemsController> logger)
+        private readonly IConfiguration? _configuration;
+        public CatalogItemsController(ICatalogItemRepository repository, ILogger<CatalogItemsController> logger,IConfiguration configuration)
         {
             _repository = repository;
             _logger = logger;
             controllerError = new ControllerError();
+            _configuration = configuration;
         }
         [HttpGet("items")]
         public async Task<ActionResult<IEnumerable<CatalogItem>?>> GetCatalogItemsAsync()
@@ -30,7 +32,6 @@ namespace Ecommerce.Catalog.API.Controllers
             {    
                 var result = await _repository.GetCatalogItemsAsync();
                 List<CatalogItemResponseDto> finalList = new List<CatalogItemResponseDto>();
-                //finalList = result.ToList();
                 if (result is not null)
                 {
                     foreach (var item in result)
@@ -66,7 +67,6 @@ namespace Ecommerce.Catalog.API.Controllers
                 if (result == null)
                 {
                     _logger.LogInformation($"Finished executing {nameof(GetCatalogItemAsync)}");
-                    //return StatusCodeResult(StatusCodes.Status404NotFound, null);
                     return NotFound();
                 }
                 else
@@ -183,7 +183,8 @@ namespace Ecommerce.Catalog.API.Controllers
             try
             {
                 HttpClient httpClient = new HttpClient();
-                var response = await httpClient.GetAsync($"http://localhost:8081/api/discounts?catalogId={catalogItem.CatalogId}");
+                var requestUrl = _configuration["CouponService:Url"] + $"?catalogId={catalogItem.CatalogId}";
+                var response = await httpClient.GetAsync(requestUrl);
                 //Ensure the operation returned 200 status
                 response.EnsureSuccessStatusCode();
                 
@@ -203,7 +204,7 @@ namespace Ecommerce.Catalog.API.Controllers
             catch(Exception)
             {
                 _logger.LogError($"{nameof(FetchDiscountedPrice)} failed to execute");
-                return null;
+                throw; 
                 
             }
         }

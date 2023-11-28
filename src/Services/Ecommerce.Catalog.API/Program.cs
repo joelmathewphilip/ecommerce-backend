@@ -1,17 +1,14 @@
-using Ecommerce.Catalog.API;
 using Ecommerce.Catalog.API.Interfaces;
 using Ecommerce.Catalog.API.Repositories;
 using Ecommerce.Shared;
-using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddEnvironmentVariables();
+    .AddEnvironmentVariables().Build() ;
 
 var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions();
 
@@ -33,9 +30,9 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration) ;
 
 builder.Services.AddSwaggerGen();
-
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 builder.Services.AddSingleton<IMongoClient>(item =>
 {
@@ -45,6 +42,7 @@ builder.Services.AddSingleton<IMongoClient>(item =>
 builder.Services.AddSingleton<ICatalogItemRepository, MongoDbCatalogItemRepository>();
 builder.Services.AddLogging();
 builder.Logging.AddConsole();
+
 
 var app = builder.Build();
 
