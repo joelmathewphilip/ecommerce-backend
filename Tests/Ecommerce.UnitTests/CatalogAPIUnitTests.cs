@@ -2,18 +2,11 @@
 using Ecommerce.Catalog.API.Controllers;
 using Ecommerce.Catalog.API.Interfaces;
 using Ecommerce.Catalog.API.Models;
-using Ecommerce.Catalog.API.Repositories;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ecommerce.UnitTests
 {

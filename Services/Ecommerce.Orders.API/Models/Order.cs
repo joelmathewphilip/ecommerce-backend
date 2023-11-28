@@ -1,10 +1,4 @@
-﻿
-using Ecommerce.Catalog.API.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ecommerce.Catalog.API.Models;
 
 namespace Ecommerce.Orders.API
 {

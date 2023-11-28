@@ -1,5 +1,4 @@
 ﻿using Ecommerce.Account.API.Model;
-using Ecommerce.Catalog.API.Models;
 
 namespace Ecommerce.Account.API.Interfaces
 {

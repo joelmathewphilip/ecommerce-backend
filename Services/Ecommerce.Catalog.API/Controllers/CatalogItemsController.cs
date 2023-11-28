@@ -2,11 +2,7 @@
 using Ecommerce.Catalog.API.Interfaces;
 using Ecommerce.Catalog.API.Models;
 using Ecommerce.Shared.Models;
-using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Validations;
-using MongoDB.Bson.IO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 namespace Ecommerce.Catalog.API.Controllers
@@ -35,11 +31,14 @@ namespace Ecommerce.Catalog.API.Controllers
                 var result = await _repository.GetCatalogItemsAsync();
                 List<CatalogItemResponseDto> finalList = new List<CatalogItemResponseDto>();
                 //finalList = result.ToList();
-                foreach(var item in result)
+                if (result is not null)
                 {
-                    var discountedPrice = await FetchDiscountedPrice(item);
-                    item.DiscountedPrice = (discountedPrice == null) ? item.CatalogMrp : discountedPrice;
-                    finalList.Add(item.toDto());
+                    foreach (var item in result)
+                    {
+                        var discountedPrice = await FetchDiscountedPrice(item);
+                        item.DiscountedPrice = (discountedPrice == null) ? item.CatalogMrp : discountedPrice;
+                        finalList.Add(item.toDto());
+                    }
                 }
                 _logger.LogInformation($"Finished executing {nameof(GetCatalogItemsAsync)}");
                 return Ok(finalList);

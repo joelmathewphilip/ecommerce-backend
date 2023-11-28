@@ -1,5 +1,4 @@
 ﻿using Ecommerce.Account.API.Model;
-using Ecommerce.Orders.API;
 
 namespace Ecommerce.Account.API
 {
@@ -32,7 +31,7 @@ namespace Ecommerce.Account.API
                 {
                     CartId = user.Cart.CartId,
                     CartTotalCost = user.Cart.CartTotalCost,
-                    CartTotalQuantity= user.Cart.CartTotalQuantity
+                    CartTotalQuantity = user.Cart.CartTotalQuantity
                 },
                 Address = user.Address,
                 DefaultPaymentMode = user.DefaultPaymentMode,
@@ -64,7 +63,7 @@ namespace Ecommerce.Account.API
                 Id = Guid.NewGuid(),
                 Mobile = userInsertDto.Mobile,
                 Name = userInsertDto.Name,
-                Orders = userInsertDto.Orders == null ? new List<Guid> (): userInsertDto.Orders
+                Orders = userInsertDto.Orders == null ? new List<Guid>() : userInsertDto.Orders
             };
         }
 
