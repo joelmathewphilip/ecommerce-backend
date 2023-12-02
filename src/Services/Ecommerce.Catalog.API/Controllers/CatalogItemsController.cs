@@ -4,7 +4,6 @@ using Ecommerce.Catalog.API.Models;
 using Ecommerce.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 namespace Ecommerce.Catalog.API.Controllers
 {
     [Route("api/[controller]")]
@@ -16,15 +15,17 @@ namespace Ecommerce.Catalog.API.Controllers
         private readonly ILogger _logger;
         public ControllerError controllerError;
         private readonly IConfiguration? _configuration;
-        public CatalogItemsController(ICatalogItemRepository repository, ILogger<CatalogItemsController> logger,IConfiguration configuration)
+        private readonly IDiscountService _discountService;
+        public CatalogItemsController(ICatalogItemRepository repository, ILogger<CatalogItemsController> logger,IConfiguration configuration, IDiscountService discountService)
         {
             _repository = repository;
             _logger = logger;
             controllerError = new ControllerError();
             _configuration = configuration;
+            _discountService = discountService; 
         }
         [HttpGet("items")]
-        public async Task<ActionResult<IEnumerable<CatalogItem>?>> GetCatalogItemsAsync()
+        public async Task<dynamic> GetCatalogItemsAsync()
         {
             _logger.LogInformation($"Started executing {nameof(GetCatalogItemsAsync)}");
             controllerError = new ControllerError();
@@ -36,7 +37,7 @@ namespace Ecommerce.Catalog.API.Controllers
                 {
                     foreach (var item in result)
                     {
-                        var discountedPrice = await FetchDiscountedPrice(item);
+                        var discountedPrice = await _discountService.FetchDiscountedPrice(item);
                         item.DiscountedPrice = (discountedPrice == null) ? item.CatalogMrp : discountedPrice;
                         finalList.Add(item.toDto());
                     }
@@ -56,7 +57,7 @@ namespace Ecommerce.Catalog.API.Controllers
 
         // GET api/<CatalogItemsController>/5
         [HttpGet("items/{id}")]
-        public async Task<ActionResult<CatalogItem?>> GetCatalogItemAsync(Guid id)
+        public async Task<dynamic> GetCatalogItemAsync(Guid id)
         {
             controllerError = new ControllerError();
             try
@@ -71,10 +72,10 @@ namespace Ecommerce.Catalog.API.Controllers
                 }
                 else
                 {
-                    var discountedPrice = await FetchDiscountedPrice(result);
+                    var discountedPrice = await _discountService.FetchDiscountedPrice(result);
                     result.DiscountedPrice = (discountedPrice == null) ? result.CatalogMrp : discountedPrice;
                     _logger.LogInformation($"Finished executing {nameof(GetCatalogItemAsync)}");
-                    return Ok(result);
+                    return Ok(result.toDto());
                 }
             }
             catch (Exception ex)
@@ -114,7 +115,7 @@ namespace Ecommerce.Catalog.API.Controllers
 
         // PUT api/<CatalogItemsController>/5
         [HttpPut("items/{id}")]
-        public async Task<ActionResult> UpdateCatalogItemAsync(Guid id, CatalogItemUpdateRequestDto catalogItemDto)
+        public async Task<dynamic> UpdateCatalogItemAsync(Guid id, CatalogItemUpdateRequestDto catalogItemDto)
         {
             _logger.LogInformation($"Started executing {nameof(UpdateCatalogItemAsync)}");
             controllerError = new ControllerError();
@@ -178,35 +179,5 @@ namespace Ecommerce.Catalog.API.Controllers
             }
         }
 
-        private async Task<dynamic> FetchDiscountedPrice(CatalogItem catalogItem)
-        {
-            try
-            {
-                HttpClient httpClient = new HttpClient();
-                var requestUrl = _configuration["CouponService:Url"] + $"?catalogId={catalogItem.CatalogId}";
-                var response = await httpClient.GetAsync(requestUrl);
-                //Ensure the operation returned 200 status
-                response.EnsureSuccessStatusCode();
-                
-                //Bind the json response to the a list of Coupon Objects
-                List<Coupon> couponObjects = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Coupon>>( await response.Content.ReadAsStringAsync());
-                
-                int maxDiscount = 0;
-                //if there are multiple coupons, loop through and get the maximum coupon.
-                foreach(var coupon in couponObjects)
-                {
-                    maxDiscount = Math.Max(maxDiscount, coupon.discountPercent);
-                }
-                double discountPercent = maxDiscount;
-                //return the final discount amount.
-                return  (catalogItem.CatalogMrp - ((discountPercent / 100) * catalogItem.CatalogMrp));
-            }
-            catch(Exception)
-            {
-                _logger.LogError($"{nameof(FetchDiscountedPrice)} failed to execute");
-                throw; 
-                
-            }
-        }
     }
 }

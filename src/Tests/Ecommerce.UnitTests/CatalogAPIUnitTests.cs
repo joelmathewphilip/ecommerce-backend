@@ -1,12 +1,15 @@
-﻿
-using Ecommerce.Catalog.API.Controllers;
+﻿using Ecommerce.Catalog.API.Controllers;
 using Ecommerce.Catalog.API.Interfaces;
 using Ecommerce.Catalog.API.Models;
+using Ecommerce.Shared.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace Ecommerce.UnitTests
 {
@@ -15,6 +18,8 @@ namespace Ecommerce.UnitTests
         private ICatalogItemRepository _repository;
         private CatalogItemsController _catalogItemsController;
         private ILogger<CatalogItemsController> _logger;
+        private IConfiguration _configuration;
+        private IDiscountService _discountService;
         public CatalogAPIUnitTests()
         {
 
@@ -26,13 +31,22 @@ namespace Ecommerce.UnitTests
             _repository = Substitute.For<ICatalogItemRepository>();
             _repository.GetCatalogItemAsync(Guid.NewGuid()).ReturnsNull();
             _logger = new LoggerFactory().CreateLogger<CatalogItemsController>();
-            _catalogItemsController = new CatalogItemsController(_repository, _logger);
+            _configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables().
+                Build();
+
+            _discountService = Substitute.For<IDiscountService>();
+            var catalogItem = CreateRandomCatalogItem();
+            _discountService.FetchDiscountedPrice(catalogItem).Returns(catalogItem.CatalogMrp - (20 / 100 * catalogItem.CatalogMrp));
+            _catalogItemsController = new CatalogItemsController(_repository, _logger, _configuration, _discountService);
 
             //Act
-            var result = await _catalogItemsController.GetCatalogItemAsync(Guid.NewGuid());
+            var result = ((NotFoundResult)await _catalogItemsController.GetCatalogItemAsync(Guid.NewGuid()));
 
             //Assert
-            result.Result.Should().BeOfType<NotFoundResult>();
+            result.Should().BeOfType<NotFoundResult>();
         }
 
         [Fact]
@@ -43,13 +57,23 @@ namespace Ecommerce.UnitTests
             var catalogItem = CreateRandomCatalogItem();
             _repository.GetCatalogItemAsync(catalogItem.CatalogId).Returns(catalogItem);
             _logger = new LoggerFactory().CreateLogger<CatalogItemsController>();
-            _catalogItemsController = new CatalogItemsController(_repository, _logger);
+            _configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            _discountService = Substitute.For<IDiscountService>();
+            _discountService.FetchDiscountedPrice(catalogItem).Returns(catalogItem.CatalogMrp - (20 / 100 * catalogItem.CatalogMrp));
+            _catalogItemsController = new CatalogItemsController(_repository, _logger, _configuration, _discountService);
 
             //Act
-            var result = await _catalogItemsController.GetCatalogItemAsync(catalogItem.CatalogId);
+            //var result = await _catalogItemsController.GetCatalogItemAsync(catalogItem.CatalogId);
+            var result = ((ObjectResult)await _catalogItemsController.GetCatalogItemAsync(catalogItem.CatalogId)).Value;
+
 
             //Assert
-            result.Result.Should().BeEquivalentTo(catalogItem, options => options.ComparingByMembers<CatalogItem>().ExcludingMissingMembers());
+            result.Should().BeEquivalentTo(catalogItem, options => options.ComparingByMembers<CatalogItem>().ExcludingMissingMembers());
         }
 
         [Fact]
@@ -60,16 +84,25 @@ namespace Ecommerce.UnitTests
             var catalogItems = CreateListOfRandomItems();
             _repository.GetCatalogItemsAsync().Returns(catalogItems);
             _logger = new LoggerFactory().CreateLogger<CatalogItemsController>();
-            _catalogItemsController = new CatalogItemsController(_repository, _logger);
+            _configuration = new ConfigurationBuilder()
+             .SetBasePath(Directory.GetCurrentDirectory())
+             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+             .AddEnvironmentVariables()
+             .Build();
+
+            _discountService = Substitute.For<IDiscountService>();
+            var catalogItem = CreateRandomCatalogItem();
+            _discountService.FetchDiscountedPrice(catalogItem).Returns(catalogItem.CatalogMrp - (20/100* catalogItem.CatalogMrp));
+            _catalogItemsController = new CatalogItemsController(_repository, _logger, _configuration, _discountService);
 
             //Act
-            var result = await _catalogItemsController.GetCatalogItemsAsync();
-            
+            var result = ((ObjectResult)await _catalogItemsController.GetCatalogItemsAsync()).Value;
+
             //Assert
             result.Should().BeEquivalentTo(catalogItems, options => options.ComparingByMembers<CatalogItem>().ExcludingMissingMembers());
         }
 
-       
+
 
         private IEnumerable<CatalogItem> CreateListOfRandomItems()
         {

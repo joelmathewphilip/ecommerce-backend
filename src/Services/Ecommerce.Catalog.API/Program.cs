@@ -1,6 +1,7 @@
 using Ecommerce.Catalog.API.Interfaces;
 using Ecommerce.Catalog.API.Repositories;
 using Ecommerce.Shared;
+using Ecommerce.Shared.Services;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,10 +39,10 @@ builder.Services.AddSingleton<IMongoClient>(item =>
 {
     return new MongoClient(connectionString: mongoDbSettings.connectionString);
 });
-
 builder.Services.AddSingleton<ICatalogItemRepository, MongoDbCatalogItemRepository>();
 builder.Services.AddLogging();
 builder.Logging.AddConsole();
+builder.Services.AddTransient<IDiscountService, DiscountService>();
 
 
 var app = builder.Build();
