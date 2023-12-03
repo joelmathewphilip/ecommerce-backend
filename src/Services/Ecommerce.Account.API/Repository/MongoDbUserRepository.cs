@@ -1,8 +1,7 @@
 ﻿using Ecommerce.Account.API.Interfaces;
-using Ecommerce.Account.API;
+using Ecommerce.Account.API.Model;
 using Ecommerce.Shared;
 using MongoDB.Driver;
-using Ecommerce.Account.API.Model;
 
 namespace Ecommerce.Account.API.Repository
 {

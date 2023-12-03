@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ecommerce.Shared.Services
+namespace Ecommerce.Catalog.API.Services
 {
     public class DiscountService : IDiscountService
     {
         private readonly IConfiguration _configuration;
-        private readonly ILogger _logger;
-        public DiscountService(IConfiguration configuration, ILogger logger)
+        private readonly ILogger<DiscountService> _logger;
+        public DiscountService(IConfiguration configuration, ILogger<DiscountService> logger)
         {
             _configuration = configuration;
             _logger = logger;

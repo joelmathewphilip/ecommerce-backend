@@ -1,5 +1,4 @@
-﻿using Ecommerce.Account.API.Model;
-using Ecommerce.Account.API.Interfaces;
+﻿using Ecommerce.Account.API.Interfaces;
 using Ecommerce.Account.API.Model;
 using Ecommerce.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +41,7 @@ namespace Ecommerce.Account.API.Controllers
             }
         }
 
-        // GET api/<CatalogItemsController>/5
+        // GET api/<AccountController>/5
         [HttpGet("users/{id}")]
         public async Task<ActionResult<User?>> GetUserAsync(Guid id)
         {
@@ -73,7 +72,7 @@ namespace Ecommerce.Account.API.Controllers
         }
 
 
-        // POST api/<CatalogItemsController>
+        // POST api/<AccountController>
         [HttpPost("users")]
         public async Task<ActionResult> AddUserAsync(UserInsertDto userInsertDto)
         {
@@ -95,7 +94,7 @@ namespace Ecommerce.Account.API.Controllers
             }
         }
 
-        // PUT api/<CatalogItemsController>/5
+        // PUT api/<AccountController>/5
         [HttpPut("users/{id}")]
         public async Task<ActionResult> UpdateUserAsync(Guid id, UserUpdateDto userUpdateDto)
         {
@@ -129,7 +128,7 @@ namespace Ecommerce.Account.API.Controllers
             }
         }
 
-        // DELETE api/<CatalogItemsController>/5
+        // DELETE api/<AccountController>/5
         [HttpDelete("users/{id}")]
         public async Task<ActionResult> DeleteUserAsync(Guid id)
         {

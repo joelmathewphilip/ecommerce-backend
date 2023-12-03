@@ -11,8 +11,6 @@
         {
             get
             {
-                //return $"mongodb://{username}:{password}@{host}:{port}";
-                //return $"mongodb+srv://{mongoUsername}:{mongoPassword}@{mongoHost}";
                 return $"mongodb://{mongoUsername}:{mongoPassword}@{mongoHost}:{mongoPort}/{mongoDbName}?authSource=admin";
 
             }

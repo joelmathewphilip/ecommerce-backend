@@ -12,7 +12,7 @@ namespace Ecommerce.Catalog.API.Controllers
     {
         // GET: api/<CatalogItemsController>
         private readonly ICatalogItemRepository _repository;
-        private readonly ILogger _logger;
+        private readonly ILogger<CatalogItemsController> _logger;
         public ControllerError controllerError;
         private readonly IConfiguration? _configuration;
         private readonly IDiscountService _discountService;
@@ -42,6 +42,7 @@ namespace Ecommerce.Catalog.API.Controllers
                         finalList.Add(item.toDto());
                     }
                 }
+                //HttpContext.Response.Headers["Content-Type"] =  "application/json";
                 _logger.LogInformation($"Finished executing {nameof(GetCatalogItemsAsync)}");
                 return Ok(finalList);
             }
@@ -97,8 +98,6 @@ namespace Ecommerce.Catalog.API.Controllers
             try
             {
                 var catalogItem = catalogItemDto.toItem();
-                //var discountedPrice = await FetchDiscountedPrice(catalogItem);
-                //catalogItem.DiscountedPrice = (discountedPrice == null) ? catalogItem.CatalogMrp : double.Parse(discountedPrice);
                 catalogItem.DiscountedPrice = catalogItem.CatalogMrp;
                 await _repository.AddCatalogItemAsync(catalogItem);
                 _logger.LogInformation($"Finished executing {nameof(AddCatalogItemAsync)}");
