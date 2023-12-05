@@ -4,10 +4,22 @@ using Ecommerce.Shared;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.
+    SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json",optional:false, reloadOnChange: true)
+    .AddEnvironmentVariables().Build();
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddLogging();
+
+// Add services to the container.
+builder.Services.AddControllers(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

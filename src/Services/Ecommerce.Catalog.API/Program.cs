@@ -40,7 +40,6 @@ builder.Services.AddSingleton<IMongoClient>(item =>
     return new MongoClient(connectionString: mongoDbSettings.connectionString);
 });
 builder.Services.AddSingleton<IDiscountService, DiscountService>();
-builder.Services.AddLogging();
 builder.Logging.AddConsole();
 builder.Services.AddSingleton<ICatalogItemRepository, MongoDbCatalogItemRepository>();
 

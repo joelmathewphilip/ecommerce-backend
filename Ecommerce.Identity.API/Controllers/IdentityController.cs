@@ -1,9 +1,10 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Ecommerce.Identity.API.Dto;
+﻿using Ecommerce.Identity.API.Dto;
 using Ecommerce.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,9 +15,15 @@ namespace Ecommerce.Identity.API.Controllers
     public class IdentityController : ControllerBase
     {
         private readonly IRepository _repository;
-        public IdentityController(IRepository repository)
+        private readonly IConfiguration _config;
+        private readonly ILogger<IdentityController> _logger;
+        private ControllerError _controllerError;
+        public IdentityController(IRepository repository, IConfiguration config, ILogger<IdentityController> logger)
         {
             _repository = repository;
+            _config = config;
+            _logger = logger;
+            _controllerError = new ControllerError();
         }
         // GET api/<IdentityController>/5
         [HttpGet("refreshtoken")]
@@ -27,9 +34,9 @@ namespace Ecommerce.Identity.API.Controllers
 
         // POST api/<IdentityController>
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] LoginDto loginDto)
+        public async Task<ActionResult> UserRegister([FromBody] LoginDto loginDto)
         {
-            ControllerError controllerError = new ControllerError();
+            _logger.LogInformation("Started executing " + nameof(UserRegister) + " method");
             try
             {
                 byte[] passwordKey;
@@ -43,40 +50,67 @@ namespace Ecommerce.Identity.API.Controllers
                     passwordHash = passwordHash
                 };
                 await _repository.AddData(user);
-                return CreatedAtAction(nameof(Register), user.username, user);
+                _logger.LogInformation("Finished executing" + nameof(UserRegister));
+                return CreatedAtAction(nameof(UserRegister), user.username, user);
                 //return Ok("User Registed Successfully");
             }
             catch (Exception ex)
             {
-                controllerError.statusCode = 500;
-                controllerError.message = ex.Message;
+                _logger.LogInformation("An error occured while executing:" + nameof(UserRegister));
+                _controllerError.statusCode = 500;
+                _controllerError.message = ex.Message;
                 Response.Headers["Content-Type"] = "application/json";
-                return StatusCode(StatusCodes.Status500InternalServerError, controllerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
             }
         }
 
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
-            UserIdentity userIdentity = await _repository.FetchRegisteredUsers(loginDto.username);
-            if (userIdentity != null)
+            ControllerError controllerError = new ControllerError();
+            DateTime validTill;
+            try
             {
-                byte[] passwordSaltBytes = userIdentity.passwordSalt;
-                byte[] passwordHashBytes = userIdentity.passwordHash;
-                if (VerifyPasswordHash(loginDto.password, passwordSaltBytes, passwordHashBytes))
+                _logger.LogDebug("Started executing method:" + nameof(Login));
+                UserIdentity userIdentity = await _repository.FetchRegisteredUsers(loginDto.username);
+                if (userIdentity != null)
                 {
-                    return Ok("Correct credentials");
+                    byte[] passwordSaltBytes = userIdentity.passwordSalt;
+                    byte[] passwordHashBytes = userIdentity.passwordHash;
+                    if (VerifyPasswordHash(loginDto.password, passwordSaltBytes, passwordHashBytes))
+                    {
+
+                        string token = CreateToken(loginDto.username, out validTill);
+                        _logger.LogDebug("Finished executing method:" + nameof(Login));
+                        return Ok(new TokenDto() { jwtToken = token, ValidTill = validTill });
+                    }
+                    else
+                    {
+                        controllerError.message = "Incorrect Password";
+                        controllerError.statusCode = 401;
+                        _logger.LogDebug("Finished executing method:" + nameof(Login));
+                        return StatusCode(StatusCodes.Status401Unauthorized, controllerError);
+                    }
                 }
                 else
                 {
-                    return Ok("Incorrect Password");
+                    controllerError.message = "User does not exist";
+                    controllerError.statusCode = 404;
+                    _logger.LogDebug("Finished executing method:" + nameof(Login));
+                    return StatusCode(StatusCodes.Status404NotFound, controllerError);
                 }
+
             }
-            else
+            catch (Exception exception)
             {
-                return Ok("User does not exist");
+                _controllerError.statusCode = 500;
+                _controllerError.message = exception.Message;
+                _logger.LogError("An error occured while running the method:" + nameof(Login));
+                return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
             }
         }
+
+
         private void CreatePasswordHash(string password, out byte[] passwordKey, out byte[] passwordHash)
         {
             using (var hmac = new HMACSHA512())
@@ -92,6 +126,39 @@ namespace Ecommerce.Identity.API.Controllers
                 byte[] generatedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return generatedHash.SequenceEqual(passwordHash);
             }
+        }
+
+
+        private string CreateToken(string username, out DateTime validTill)
+        {
+            try
+            {
+                List<Claim> claims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.Name,username),
+                    new Claim(ClaimTypes.Role,"nonadmin")
+                };
+                var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config["AppSettings:Token"]));
+
+                var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+                validTill = DateTime.UtcNow.AddHours(3);
+
+                var token = new JwtSecurityToken(
+                    claims: claims,
+                    issuer: "ecommerce.identity.api",
+                    expires: validTill,
+                    signingCredentials: cred
+                    );
+                var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+                return jwt;
+            }
+            catch (Exception)
+            {
+                _logger.LogError("An error occured while running" + nameof(CreateToken));
+                throw;
+            }
+
         }
 
     }
