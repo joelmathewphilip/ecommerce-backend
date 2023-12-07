@@ -136,7 +136,8 @@ namespace Ecommerce.Identity.API.Controllers
                 List<Claim> claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name,username),
-                    new Claim(ClaimTypes.Role,"nonadmin")
+                    new Claim(ClaimTypes.Role,"nonadmin"),
+                    new Claim(JwtRegisteredClaimNames.Aud,"ecommerce.catalog.api")
                 };
                 var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config["AppSettings:Token"]));
 

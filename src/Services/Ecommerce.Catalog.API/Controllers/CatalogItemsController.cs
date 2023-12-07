@@ -2,12 +2,14 @@
 using Ecommerce.Catalog.API.Interfaces;
 using Ecommerce.Catalog.API.Models;
 using Ecommerce.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Catalog.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class CatalogItemsController : ControllerBase
     {
         // GET: api/<CatalogItemsController>
@@ -24,7 +26,9 @@ namespace Ecommerce.Catalog.API.Controllers
             _configuration = configuration;
             _discountService = discountService; 
         }
+        [Authorize]
         [HttpGet("items")]
+        
         public async Task<dynamic> GetCatalogItemsAsync()
         {
             _logger.LogInformation($"Started executing {nameof(GetCatalogItemsAsync)}");
