@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Identity.API.Dto;
+using Ecommerce.Shared;
 using Ecommerce.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -7,7 +8,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Ecommerce.Identity.API.Controllers
 {
     [Route("api/[controller]")]
@@ -69,6 +69,7 @@ namespace Ecommerce.Identity.API.Controllers
         {
             ControllerError controllerError = new ControllerError();
             DateTime validTill;
+            string token = string.Empty;
             try
             {
                 _logger.LogDebug("Started executing method:" + nameof(Login));
@@ -79,9 +80,20 @@ namespace Ecommerce.Identity.API.Controllers
                     byte[] passwordHashBytes = userIdentity.passwordHash;
                     if (VerifyPasswordHash(loginDto.password, passwordSaltBytes, passwordHashBytes))
                     {
-
-                        string token = CreateToken(loginDto.username, out validTill);
+                        if (loginDto.username.Equals("admin"))
+                        {
+                            token = CreateToken(loginDto.username, out validTill, isAdmin: true);
+                        }
+                        else
+                        {
+                            token = CreateToken(loginDto.username, out validTill);
+                        }
                         _logger.LogDebug("Finished executing method:" + nameof(Login));
+                        var httpCookie = new Microsoft.AspNetCore.Http.CookieOptions
+                        {
+                            HttpOnly = true
+                        };
+                        Response.Cookies.Append("AuthCookie", token, httpCookie);
                         return Ok(new TokenDto() { jwtToken = token, ValidTill = validTill });
                     }
                     else
@@ -129,25 +141,25 @@ namespace Ecommerce.Identity.API.Controllers
         }
 
 
-        private string CreateToken(string username, out DateTime validTill)
+        private string CreateToken(string username, out DateTime validTill, bool isAdmin = false)
         {
             try
             {
                 List<Claim> claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name,username),
-                    new Claim(ClaimTypes.Role,"nonadmin"),
-                    new Claim(JwtRegisteredClaimNames.Aud,"ecommerce.catalog.api")
+                    new Claim(ClaimTypes.Role, isAdmin ? "admin" : "nonadmin"),
+                    //new Claim(JwtRegisteredClaimNames.Aud,"ecommerce.catalog.api")
                 };
-                var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config["AppSettings:Token"]));
+                var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config[Constants.IdentitySecretKeySettingName]));
 
-                var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+                var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
                 validTill = DateTime.UtcNow.AddHours(3);
 
                 var token = new JwtSecurityToken(
                     claims: claims,
-                    issuer: "ecommerce.identity.api",
+                    issuer: _config[Constants.IdentityIssuerSettingName],
                     expires: validTill,
                     signingCredentials: cred
                     );

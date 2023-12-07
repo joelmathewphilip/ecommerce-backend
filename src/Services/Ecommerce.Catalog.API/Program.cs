@@ -47,16 +47,15 @@ builder.Services.AddSingleton<ICatalogItemRepository, MongoDbCatalogItemReposito
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
+    
     opt.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
-        //ValidateLifetime = true,
-        ValidIssuer = "ecommerce.identity.api",
-        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidIssuer = builder.Configuration[Constants.CatalogIdentityIssuerSettingName] ,
+        ValidateAudience = false,
         ValidateIssuerSigningKey = true,
-        ValidAudience = "ecommerce.catalog.api",
-        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("MIIBOQIBAAJAYRdI+qm2sNFdkYVcChA5zSJ7J2Zy5eCutkIZ0AP4rGytANxYiAuVi0CZtR10KfV4qSlCbnWlJhrBX9257/mHzwIDAQABAkAG/VQlp34dcJUZ2s3rc4uVtvvCtF9lKS2qtUuCbCbE0t9R5jdhBDXojCVHbE0TJ8U/rv99ijOYxZqdinYD5fdxAiEApAMCPPqpcxp1L0lMgVdmXsC/UFuZtxEuPXLcR47ydIUCIQCXi7apGs7Sa3liMm5+TQhnvymjQjDXBcY9pqA8iIe1QwIgKjBD8R+hWuRhZGp8bYDn6lO2YptNbRPUSyYyl42jvGkCIQCLm2PciRu68NNTyQ3NQH3bxVlAUvvXOjSUGupGmagbLQIgLxekN9xCUZ6zKLcTc+u5RycM3k51bTXp/VPH7H7IjvE="))
-        //ClockSkew = TimeSpan.FromHours(3)
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration[Constants.CatalogIdentitySingingKeySettingName]))
     };
 });
 
