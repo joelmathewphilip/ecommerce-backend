@@ -6,7 +6,7 @@ EXPOSE 7013
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["../../src/Shared/Ecommerce.Shared/Ecommerce.Shared.csproj", "src/Shared/Ecommerce.Shared/"]
+COPY ["src/Shared/Ecommerce.Shared/Ecommerce.Shared.csproj", "src/Shared/Ecommerce.Shared/"]
 COPY ["Ecommerce.Identity.API.csproj", "src/Services/Ecommerce.Identity.API/"]
 
 RUN dotnet restore "src/Services/Ecommerce.Identity.API/Ecommerce.Identity.API.csproj"
