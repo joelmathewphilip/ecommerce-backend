@@ -1,9 +1,7 @@
 name: Build Docker Image
 
 on:
-  push:
-    branches:
-      - main  # Adjust the branch as needed
+  workflow_dispatch:
 
 jobs:
   build:
