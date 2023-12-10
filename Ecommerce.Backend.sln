@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CFC4D0C0-4281-4BE7-BE33-E4E1BF27CC2E}"
-	ProjectSection(SolutionItems) = preProject
-		src\Services\Ecommerce.Identity.API\Dockerfile = src\Services\Ecommerce.Identity.API\Dockerfile
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{34EB13DA-3336-47BF-8B1B-071C0FE74A55}"
 EndProject
