@@ -1,0 +1,23 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Adjust the branch as needed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v2
+        with:
+          dockerfile: src/Services/Ecommerce.Identity.API/Dockerfile  # Adjust the Dockerfile path
+
+      - name: Build Docker Image
+        run: docker build -t identityservice:v1 .
+        working-directory: src/Services/Ecommerce.Identity.API  # Adjust the working directory
