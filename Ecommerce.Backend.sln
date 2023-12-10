@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CFC4D0C0-4281-4BE7-BE33-E4E1BF27CC2E}"
+	ProjectSection(SolutionItems) = preProject
+		src\Services\Ecommerce.Identity.API\Dockerfile = src\Services\Ecommerce.Identity.API\Dockerfile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{34EB13DA-3336-47BF-8B1B-071C0FE74A55}"
 EndProject
@@ -21,7 +24,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{81B05637
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ecommerce.UnitTests", "src\Tests\Ecommerce.UnitTests\Ecommerce.UnitTests.csproj", "{CE7A8C80-9717-4AE8-93DF-7C807BA11C86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ecommerce.Identity.API", "Ecommerce.Identity.API\Ecommerce.Identity.API.csproj", "{CAD419C8-6FFA-4267-9100-DC0D6804461A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ecommerce.Identity.API", "src\Services\Ecommerce.Identity.API\Ecommerce.Identity.API.csproj", "{CAD419C8-6FFA-4267-9100-DC0D6804461A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EEDF0316-CF63-41C8-A9F1-6ADF66DA9B22}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		src\Services\Ecommerce.Identity.API\Dockerfile = src\Services\Ecommerce.Identity.API\Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

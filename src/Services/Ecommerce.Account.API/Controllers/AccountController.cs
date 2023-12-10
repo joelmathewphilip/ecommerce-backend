@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Account.API.Interfaces;
 using Ecommerce.Account.API.Model;
 using Ecommerce.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -8,6 +9,7 @@ namespace Ecommerce.Account.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         // GET: api/<CatalogItemsController>

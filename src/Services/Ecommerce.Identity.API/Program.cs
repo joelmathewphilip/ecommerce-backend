@@ -6,7 +6,7 @@ using MongoDB.Driver;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.
     SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json",optional:false, reloadOnChange: true)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables().Build();
 
 // Add services to the container.
@@ -36,20 +36,20 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+
+app.UseSwagger(options =>
 {
-    app.UseSwagger(options =>
-    {
-        options.RouteTemplate = "api/catalog/swagger/{documentname}/swagger.json";
-    });
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/api/catalog/swagger/v1/swagger.json", "Catalog API");
-        //if runnng on IIS, the app will look for the swagger.json at
-        //'https://localhost:<port>/<routeprefix>/api/catalog/swagger/{documentname}/swagger.json' url
-        c.RoutePrefix = "api/catalog/swagger";
-    });
-}
+    options.RouteTemplate = "api/identity/swagger/{documentname}/swagger.json";
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/api/identity/swagger/v1/swagger.json", "Identity API");
+    //if runnng on IIS, the app will look for the swagger.json at
+    //'https://localhost:<port>/<routeprefix>/api/identity/swagger/{documentname}/swagger.json' url
+    c.RoutePrefix = "api/identity/swagger";
+});
+
 
 app.UseRouting();
 app.UseHttpsRedirection();

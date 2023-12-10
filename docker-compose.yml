@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  mainapp:
+    build:
+      context: .
+      dockerfile: src/Services/Ecommerce.Identity.API/Dockerfile
+    ports:
+      - "7013:80"
+    depends_on:
+      - sharedproject
+
+  sharedproject:
+    build:
+      context: .
+      dockerfile: src/Shared/Ecommerce.Shared/Dockerfile

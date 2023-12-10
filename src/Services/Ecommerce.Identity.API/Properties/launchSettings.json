@@ -1,14 +1,14 @@
 {
   "profiles": {
-    "Ecommerce.Orders.API": {
+    "Ecommerce.Identity.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "api/identity/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7206;http://localhost:5146"
+      "applicationUrl": "https://localhost:7013;http://localhost:5165"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -31,8 +31,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:3857",
-      "sslPort": 44314
+      "applicationUrl": "http://localhost:6417",
+      "sslPort": 44360
     }
   }
 }

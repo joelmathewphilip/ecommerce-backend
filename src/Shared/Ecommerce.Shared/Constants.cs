@@ -4,9 +4,12 @@
     {
        
 
-        //UserAPI API Constants
+        //AccountAPI API Constants
         public static string MongoDbUserDatabaseName = "ecommerce";
         public static string MongoDbUserCollectionName = "user";
+        public static string AccountIdentityAudienceSettingName = "JWTAuth:Audience";
+        public static string AccountIdentityIssuerSettingName = "JWTAuth:Issuer";
+        public static string AccountIdentitySingingKeySettingName = "JWTAuth:Key";
 
         //Identity API Constants
         public static string MongoDbUserIdentityDatabaseName = "ecommerce";

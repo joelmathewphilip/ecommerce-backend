@@ -9,7 +9,7 @@ namespace Ecommerce.Catalog.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
+    [Authorize]
     public class CatalogItemsController : ControllerBase
     {
         // GET: api/<CatalogItemsController>
@@ -26,7 +26,6 @@ namespace Ecommerce.Catalog.API.Controllers
             _configuration = configuration;
             _discountService = discountService; 
         }
-        [Authorize]
         [HttpGet("items")]
         
         public async Task<dynamic> GetCatalogItemsAsync()
