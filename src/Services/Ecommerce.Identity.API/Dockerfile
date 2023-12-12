@@ -1,8 +1,8 @@
 
-
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 7013
+EXPOSE 80
+EXPOSe 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
@@ -23,4 +23,4 @@ RUN dotnet publish "Ecommerce.Identity.API.csproj" -c Release -o /app/publish /p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Ecommerce.Identity.API.dll"]
+ENTRYPOINT ["dotnet", "Ecommerce.Identity.API.dll","--server.urls","http://+:80;https://+:443"]

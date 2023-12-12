@@ -7,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using System.Reflection;
-using Xunit.Sdk;
 
 namespace Ecommerce.UnitTests
 {
