@@ -2,6 +2,7 @@ using MongoDB.Driver;
 using Ecommerce.Account.API.Repository;
 using Ecommerce.Account.API.Interfaces;
 using Ecommerce.Shared;
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -46,8 +47,37 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "AccountAPI", Version = "v1" });
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
 
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
+
+
+builder.Services.AddAuthorization();
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 builder.Services.AddSingleton<IMongoClient>(item =>
 {
@@ -64,8 +94,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
+
     app.UseSwagger(options =>
     {
         options.RouteTemplate = "api/account/swagger/{documentname}/swagger.json";
@@ -77,7 +107,7 @@ if (app.Environment.IsDevelopment())
         //'https://localhost:<port>/<routeprefix>/api/account/swagger/{documentname}/swagger.json' url
         c.RoutePrefix = "api/account/swagger";
     });
-}
+
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
