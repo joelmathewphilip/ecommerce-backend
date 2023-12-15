@@ -8,6 +8,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +40,34 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogAPI", Version = "v1" });
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 builder.Services.AddSingleton<IMongoClient>(item =>
 {
@@ -78,6 +106,7 @@ app.UseSwagger(options =>
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/api/catalog/swagger/v1/swagger.json", "Catalog API");
+    
     //if runnng on IIS, the app will look for the swagger.json at
     //'https://localhost:<port>/<routeprefix>/api/catalog/swagger/{documentname}/swagger.json' url
     c.RoutePrefix = "api/catalog/swagger";
