@@ -15,12 +15,12 @@ COPY ["src/Services/Ecommerce.Identity.API/Ecommerce.Identity.API.csproj", "src/
 RUN dotnet restore "src/Services/Ecommerce.Identity.API/Ecommerce.Identity.API.csproj"
 COPY . .
 WORKDIR "/src/src/Services/Ecommerce.Identity.API"
-RUN dotnet build "Ecommerce.Identity.API.csproj" -c Release -o /app/build --no-cache
+RUN dotnet build "Ecommerce.Identity.API.csproj" -c Release -o /app/identity/build --no-cache
 
 FROM build AS publish
-RUN dotnet publish "Ecommerce.Identity.API.csproj" -c Release -o /app/publish --no-cache
+RUN dotnet publish "Ecommerce.Identity.API.csproj" -c Release -o /app/identity/publish --no-cache
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app/identity/publish .
 ENTRYPOINT ["dotnet", "Ecommerce.Identity.API.dll","--server.urls","http://+:80;https://+:443"]

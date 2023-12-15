@@ -14,12 +14,12 @@ COPY ["src/Services/Ecommerce.Catalog.API/Ecommerce.Catalog.API.csproj", "src/Se
 RUN dotnet restore "src/Services/Ecommerce.Catalog.API/Ecommerce.Catalog.API.csproj"
 COPY . .
 WORKDIR "/src/src/Services/Ecommerce.Catalog.API"
-RUN dotnet build "Ecommerce.Catalog.API.csproj" -c Release -o /app/build --no-cache
+RUN dotnet build "Ecommerce.Catalog.API.csproj" -c Release -o /app/catalog/build --no-cache
 
 FROM build AS publish
-RUN dotnet publish "Ecommerce.Catalog.API.csproj" -c Release -o /app/publish --no-cache
+RUN dotnet publish "Ecommerce.Catalog.API.csproj" -c Release -o /app/catalog/publish --no-cache
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app/catalog/publish .
 ENTRYPOINT ["dotnet", "Ecommerce.Catalog.API.dll","--server.urls","http://+:80;https://+:443"]

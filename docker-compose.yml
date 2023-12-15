@@ -1,7 +1,6 @@
----
-version: "3.8"
+version: '3.8'
 networks:
-  ecommerce.backend: 
+  ecommerce.backend:
     name: ecommerce.backend
 services:
   mongo:
@@ -9,28 +8,28 @@ services:
     image: mongo
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_PASSWORD: "12345"
+      MONGO_INITDB_ROOT_PASSWORD: '12345'
       MONGO_INITDB_ROOT_USERNAME: mongoadmin
     ports:
-      - 27017:27017
+      - '27017:27017'
     networks:
       - ecommerce.backend
     volumes:
-      - ecommerce_data:/app/data
+      - 'ecommerce_data:/app/data'
 
 
   catalogservice:
     container_name: catalogservice-v1
-    image: catalogservice:v1
+    image: 'catalogservice:v1'
     build:
       context: .
       dockerfile: src/Services/Ecommerce.Catalog.API/Dockerfile
     ports:
-      - 5002:80
-      - 5003:443
+      - '5002:80'
+      - '5003:443'
     environment:
-      MongoDbSettings:mongoHost: mongo
-      MongoDbSettings:mongoPassword: "12345"
+      'MongoDbSettings:mongoHost': mongo
+      'MongoDbSettings:mongoPassword': '12345'
     networks:
       - ecommerce.backend
     depends_on:
@@ -39,19 +38,37 @@ services:
 
   identityservice:
     container_name: identityservice-v1
-    image: identityservice:v1
+    image: 'identityservice:v1'
     build:
       context: .
       dockerfile: src/Services/Ecommerce.Identity.API/Dockerfile
     ports:
-      - 5000:80
-      - 5001:443
+      - '5000:80'
+      - '5001:443'
     environment:
-      MongoDbSettings:mongoHost: mongo
-      MongoDbSettings:mongoPassword: "12345"
+      'MongoDbSettings:mongoHost': mongo
+      'MongoDbSettings:mongoPassword': '12345'
     networks:
       - ecommerce.backend
     depends_on:
       - mongo
+
+  accountservice:
+    container_name: accountservice-v1
+    image: 'accountservice:v1'
+    build:
+      context: .
+      dockerfile: src/Services/Ecommerce.Account.API/Dockerfile
+    ports:
+      - '5004:80'
+      - '5005:443'
+    environment:
+      'MongoDbSettings:mongoHost': mongo
+      'MongoDbSettings:mongoPassword': '12345'
+    networks:
+      - ecommerce.backend
+    depends_on:
+      - mongo
+
 volumes:
-  ecommerce_data: null
+  ecommerce_data: 
