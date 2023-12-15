@@ -1,5 +1,4 @@
-﻿using Ecommerce.Catalog.API.Models;
-namespace Ecommerce.Account.API.Model
+﻿namespace Ecommerce.Account.API.Model
 {
     public class Cart
     {
@@ -7,6 +6,6 @@ namespace Ecommerce.Account.API.Model
         public long CartTotalQuantity { get; set; }
         public Guid CartId { get; set; }
         public Guid CartUserId { get; set; }
-        public List<CatalogItem> CartCatalogItems { get; set; }
+        public List<Guid> CartCatalogItems { get; set; }
     }
 }

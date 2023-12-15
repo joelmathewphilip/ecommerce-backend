@@ -1,5 +1,4 @@
-﻿using Ecommerce.Account.API.Model;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Ecommerce.Account.API.Model
 {

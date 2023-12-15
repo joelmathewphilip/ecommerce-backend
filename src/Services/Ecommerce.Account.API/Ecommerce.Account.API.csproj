@@ -7,17 +7,20 @@
     <UserSecretsId>bbf717e6-cec2-49e3-b87a-c4236202e1eb</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.10" />
-    <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.10" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
+		<PackageReference Include="MongoDB.Driver" Version="2.20.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Serilog" Version="3.0.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Ecommerce.Shared\Ecommerce.Shared.csproj" />
-    <ProjectReference Include="..\Ecommerce.Catalog.API\Ecommerce.Catalog.API.csproj" />
-    <ProjectReference Include="..\Ecommerce.Orders.API\Ecommerce.Orders.API.csproj" />
   </ItemGroup>
 
 </Project>
