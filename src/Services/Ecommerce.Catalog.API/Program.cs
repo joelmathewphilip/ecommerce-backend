@@ -4,6 +4,9 @@ using Ecommerce.Catalog.API.Services;
 using Ecommerce.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddEnvironmentVariables().Build() ;
+    .AddEnvironmentVariables().Build();
 
 var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions();
 
@@ -24,6 +27,7 @@ aiOptions.EnableQuickPulseMetricStream = false;
 builder.Services.AddApplicationInsightsTelemetry(aiOptions);
 builder.Services.AddLogging();
 
+BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 // Add services to the container.
 builder.Services.AddControllers(options =>
 {
@@ -33,7 +37,7 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSingleton<IConfiguration>(builder.Configuration) ;
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 builder.Services.AddSwaggerGen();
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
@@ -47,12 +51,12 @@ builder.Services.AddSingleton<ICatalogItemRepository, MongoDbCatalogItemReposito
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
-    
+
     opt.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
         ValidateLifetime = true,
-        ValidIssuer = builder.Configuration[Constants.CatalogIdentityIssuerSettingName] ,
+        ValidIssuer = builder.Configuration[Constants.CatalogIdentityIssuerSettingName],
         ValidateAudience = false,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration[Constants.CatalogIdentitySingingKeySettingName]))
@@ -66,20 +70,19 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+app.UseSwagger(options =>
 {
-    app.UseSwagger(options =>
-    {
-        options.RouteTemplate = "api/catalog/swagger/{documentname}/swagger.json";
-    });
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/api/catalog/swagger/v1/swagger.json", "Catalog API");
-        //if runnng on IIS, the app will look for the swagger.json at
-        //'https://localhost:<port>/<routeprefix>/api/catalog/swagger/{documentname}/swagger.json' url
-        c.RoutePrefix = "api/catalog/swagger";
-    });
-}
+    options.RouteTemplate = "api/catalog/swagger/{documentname}/swagger.json";
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/api/catalog/swagger/v1/swagger.json", "Catalog API");
+    //if runnng on IIS, the app will look for the swagger.json at
+    //'https://localhost:<port>/<routeprefix>/api/catalog/swagger/{documentname}/swagger.json' url
+    c.RoutePrefix = "api/catalog/swagger";
+});
+
 
 app.UseRouting();
 app.UseAuthentication();

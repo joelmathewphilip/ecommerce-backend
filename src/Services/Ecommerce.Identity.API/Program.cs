@@ -1,6 +1,9 @@
 using Ecommerce.Identity.API;
 using Ecommerce.Identity.API.Repository;
 using Ecommerce.Shared;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +13,7 @@ builder.Configuration.
     .AddEnvironmentVariables().Build();
 
 // Add services to the container.
-
+BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddLogging();
