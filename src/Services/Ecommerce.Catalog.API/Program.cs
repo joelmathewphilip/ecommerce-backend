@@ -9,6 +9,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Microsoft.OpenApi.Models;
+using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,12 +22,17 @@ var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.Applicat
 
 // Disables adaptive sampling.
 aiOptions.EnableAdaptiveSampling = false;
-
-// Disables QuickPulse (Live Metrics stream).
 aiOptions.EnableQuickPulseMetricStream = false;
-
 builder.Services.AddApplicationInsightsTelemetry(aiOptions);
-builder.Services.AddLogging();
+
+
+builder.Services.Configure<TelemetryConfiguration>(telemetryConfiguration =>
+{
+    var telemetryProcessorChainBuilder = telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+    // Using adaptive sampling
+    telemetryProcessorChainBuilder.UseAdaptiveSampling(maxTelemetryItemsPerSecond: 5);
+    telemetryProcessorChainBuilder.Build();
+});
 
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 // Add services to the container.
@@ -35,11 +41,10 @@ builder.Services.AddControllers(options =>
     options.SuppressAsyncSuffixInActionNames = false;
 });
 
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogAPI", Version = "v1" });
@@ -68,6 +73,7 @@ builder.Services.AddSwaggerGen(opt =>
         }
     });
 });
+
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 builder.Services.AddSingleton<IMongoClient>(item =>
 {
@@ -79,7 +85,6 @@ builder.Services.AddSingleton<ICatalogItemRepository, MongoDbCatalogItemReposito
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
-
     opt.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
@@ -92,10 +97,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 builder.Services.AddAuthorization();
-
-
-
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 
@@ -116,7 +119,5 @@ app.UseSwaggerUI(c =>
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

@@ -5,6 +5,7 @@ using Ecommerce.Shared;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -13,15 +14,21 @@ builder.Configuration
     .AddEnvironmentVariables();
 
 var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions();
-
 // Disables adaptive sampling.
 aiOptions.EnableAdaptiveSampling = false;
-
 // Disables QuickPulse (Live Metrics stream).
 aiOptions.EnableQuickPulseMetricStream = false;
-
 builder.Services.AddApplicationInsightsTelemetry(aiOptions);
 builder.Services.AddLogging();
+
+builder.Services.Configure<TelemetryConfiguration>(telemetryConfiguration =>
+{
+    var telemetryProcessorChainBuilder = telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+    // Using adaptive sampling
+    telemetryProcessorChainBuilder.UseAdaptiveSampling(maxTelemetryItemsPerSecond: 5);
+    telemetryProcessorChainBuilder.Build();
+});
+
 
 builder.Services.AddControllers(options =>
 {
@@ -30,7 +37,6 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
-
     opt.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
@@ -83,30 +89,28 @@ builder.Services.AddSingleton<IMongoClient>(item =>
 {
     return new MongoClient(connectionString: mongoDbSettings.connectionString);
 });
-
 builder.Services.AddSingleton<IUserRepository, MongoDbUserRepository>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
 
-    app.UseSwagger(options =>
-    {
-        options.RouteTemplate = "api/account/swagger/{documentname}/swagger.json";
-    });
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/api/account/swagger/v1/swagger.json", "Account API");
-        //if runnng on IIS, the app will look for the swagger.json at
-        //'https://localhost:<port>/<routeprefix>/api/account/swagger/{documentname}/swagger.json' url
-        c.RoutePrefix = "api/account/swagger";
-    });
+app.UseSwagger(options =>
+{
+    options.RouteTemplate = "api/account/swagger/{documentname}/swagger.json";
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/api/account/swagger/v1/swagger.json", "Account API");
+    //if runnng on IIS, the app will look for the swagger.json at
+    //'https://localhost:<port>/<routeprefix>/api/account/swagger/{documentname}/swagger.json' url
+    c.RoutePrefix = "api/account/swagger";
+});
 
 
 app.UseHttpsRedirection();

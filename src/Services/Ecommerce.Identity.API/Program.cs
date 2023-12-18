@@ -1,6 +1,7 @@
 using Ecommerce.Identity.API;
 using Ecommerce.Identity.API.Repository;
 using Ecommerce.Shared;
+using Microsoft.ApplicationInsights.Extensibility;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -12,11 +13,28 @@ builder.Configuration.
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables().Build();
 
+var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions();
+// Disables adaptive sampling.
+aiOptions.EnableAdaptiveSampling = false;
+// Disables QuickPulse (Live Metrics stream).
+aiOptions.EnableQuickPulseMetricStream = false;
+builder.Services.AddApplicationInsightsTelemetry(aiOptions);
+builder.Services.AddLogging();
+
+builder.Services.Configure<TelemetryConfiguration>(telemetryConfiguration =>
+{
+    var telemetryProcessorChainBuilder = telemetryConfiguration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+    // Using adaptive sampling
+    telemetryProcessorChainBuilder.UseAdaptiveSampling(maxTelemetryItemsPerSecond: 5);
+    telemetryProcessorChainBuilder.Build();
+});
+
 // Add services to the container.
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddLogging();
+
 
 // Add services to the container.
 builder.Services.AddControllers(options =>
@@ -28,6 +46,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddLogging();
 builder.Logging.AddConsole();
+
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 builder.Services.AddSingleton<IMongoClient>(item =>
 {
@@ -39,8 +58,6 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-
-
 app.UseSwagger(options =>
 {
     options.RouteTemplate = "api/identity/swagger/{documentname}/swagger.json";
