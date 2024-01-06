@@ -2,6 +2,7 @@ version: '3.8'
 networks:
   ecommerce.backend:
     name: ecommerce.backend
+
 services:
   mongo:
     container_name: mongo
@@ -14,8 +15,8 @@ services:
       - '27017:27017'
     networks:
       - ecommerce.backend
-    volumes:
-      - 'ecommerce_data:/app/data'
+    volumes: 
+      - ecommerce_data:/data/db/ecommerce
 
 
   catalogservice:
@@ -69,6 +70,16 @@ services:
       - ecommerce.backend
     depends_on:
       - mongo
+   
+  rabbitmq:
+     restart: always
+     container_name: rabbitmq
+     image: rabbitmq:3-management-alpine
+     ports:
+       - 5672:5672
+       - 15672:15672
+
+
 
 volumes:
-  ecommerce_data: 
+    ecommerce_data:
