@@ -15,12 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Ecommerce.Shared\Ecommerce.Shared.csproj" />
-    <ProjectReference Include="..\Ecommerce.Catalog.API\Ecommerce.Catalog.API.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Ecommerce.Shared\Ecommerce.Shared.csproj" />
+    <ProjectReference Include="..\Ecommerce.Orders.Application\Ecommerce.Orders.Application.csproj" />
+    <ProjectReference Include="..\Ecommerce.Orders.Infrastructure\Ecommerce.Orders.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
