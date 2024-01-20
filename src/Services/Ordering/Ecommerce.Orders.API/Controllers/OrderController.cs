@@ -30,7 +30,7 @@ namespace Ecommerce.Orders.API.Controllers
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpGet(Name ="Get All Orders")]
         [ProducesResponseType(typeof(IEnumerable<Application.Features.Orders.Queries.GetAllOrdersList.OrdersVm>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IEnumerable<Application.Features.Orders.Queries.GetAllOrdersList.OrdersVm>), StatusCodes.Status401Unauthorized)]
@@ -51,7 +51,6 @@ namespace Ecommerce.Orders.API.Controllers
             return Ok(checkoutOrderCommand);
         }
 
-        [Authorize(Roles ="admin")]
         [HttpPut(Name = "Update Order")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
