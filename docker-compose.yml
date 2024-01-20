@@ -5,7 +5,7 @@ networks:
 
 services:
   mongo:
-    container_name: mongo
+    container_name: mongodb
     image: mongo
     restart: unless-stopped
     environment:
@@ -15,9 +15,23 @@ services:
       - '27017:27017'
     networks:
       - ecommerce.backend
-    volumes: 
-      - ecommerce_data:/data/db/ecommerce
+    volumes:
+      - type: volume
+        source: ecommerce_data
+        target: /data/db
 
+  orderdb:
+    container_name: orderdb
+    image: postgres
+    restart: unless-stopped
+    environment:
+        POSTGRES_PASSWORD: '12345'
+    ports:
+      - 5432:5432
+    networks:
+     - ecommerce.backend
+    volumes:
+     - "pg_data:/var/lib/postgresql/data"
 
   catalogservice:
     container_name: catalogservice-v1
@@ -31,6 +45,7 @@ services:
     environment:
       'MongoDbSettings:mongoHost': mongo
       'MongoDbSettings:mongoPassword': '12345'
+      'MongoDbSettings:mongoPort': '27017'
     networks:
       - ecommerce.backend
     depends_on:
@@ -49,6 +64,7 @@ services:
     environment:
       'MongoDbSettings:mongoHost': mongo
       'MongoDbSettings:mongoPassword': '12345'
+      'MongoDbSettings:mongoPort': '27017'
     networks:
       - ecommerce.backend
     depends_on:
@@ -66,10 +82,31 @@ services:
     environment:
       'MongoDbSettings:mongoHost': mongo
       'MongoDbSettings:mongoPassword': '12345'
+      'MongoDbSettings:mongoPort': '27017'
     networks:
       - ecommerce.backend
     depends_on:
       - mongo
+
+  orderingservice:
+    container_name: orderingservice-v1
+    image: 'orderingservice:v1'
+    build:
+      context: .
+      dockerfile: src/Services/Ordering/Ecommerce.Orders.API/Dockerfile
+    ports:
+      - '5006:80'
+      - '5007:443'
+    environment:
+      'PostgresDbSettings:postgresHost': 'orderdb'
+      'PostgresDbSettings:postgresPassword': '12345'
+      'PostgresDbSettings:postgresUser': 'postgres'
+      'PostgresDbSettings:postgresPort': '5432'
+      'ASPNETCORE_ENVIRONMENT': 'Development'
+    networks:
+      - ecommerce.backend
+    depends_on:
+      - orderdb
    
   rabbitmq:
      restart: always
@@ -83,3 +120,4 @@ services:
 
 volumes:
     ecommerce_data:
+    pg_data:
