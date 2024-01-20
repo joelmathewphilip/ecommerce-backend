@@ -1,23 +1,20 @@
 ﻿using Ecommerce.Orders.Application.Contracts.Infrastructure;
 using Ecommerce.Orders.Application.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ecommerce.Orders.Infrastructure.Mail
 {
     public class EmailService : IEmailServices
     {
         public EmailSettings _emailSettings { get; }
-        public ILogger<EmailService> _logger;
-        public EmailService(EmailSettings emailSettings, ILogger<EmailService> logger)
+        public ILogger<EmailService> _logger { get; }
+        
+        public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger)
         {
-            _emailSettings = emailSettings;
+            _emailSettings = emailSettings.Value;
             _logger = logger;
         }
 

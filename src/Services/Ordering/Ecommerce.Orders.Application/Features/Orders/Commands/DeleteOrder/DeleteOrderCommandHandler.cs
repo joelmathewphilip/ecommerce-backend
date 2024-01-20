@@ -8,7 +8,7 @@ using Ecommerce.Orders.Domain.Entity;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Ecommerce.Orders.Application.Features.Orders.Commands.DeleteOrdder
+namespace Ecommerce.Orders.Application.Features.Orders.Commands.DeleteOrder
 {
     public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
     {
@@ -27,7 +27,7 @@ namespace Ecommerce.Orders.Application.Features.Orders.Commands.DeleteOrdder
 
         async Task<Unit> IRequestHandler<DeleteOrderCommand, Unit>.Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
         {
-            var orderItemToDelete = _orderRepository.GetByIdAsync(request.Id);
+            var orderItemToDelete = await _orderRepository.GetByIdAsync(request.Id);
             if (orderItemToDelete == null)
             {
                 throw new NotFoundException(nameof(Order),request.Id);

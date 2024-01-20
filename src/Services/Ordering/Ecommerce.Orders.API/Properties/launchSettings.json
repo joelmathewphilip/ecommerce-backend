@@ -3,12 +3,12 @@
     "Ecommerce.Orders.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/order/swagger",
+      "launchUrl": "api/orders/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:5006;http://localhost:5007"
+      "applicationUrl": "https://localhost:5010;http://localhost:5011"
     },
     "IIS Express": {
       "commandName": "IISExpress",

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Ecommerce.Orders.Application.Features.Orders.Commands.DeleteOrdder
+namespace Ecommerce.Orders.Application.Features.Orders.Commands.DeleteOrder
 {
     public class DeleteOrderCommand : IRequest
     {

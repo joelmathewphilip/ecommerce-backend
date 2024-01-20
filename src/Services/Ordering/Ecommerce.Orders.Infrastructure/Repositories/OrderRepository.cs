@@ -8,14 +8,14 @@ namespace Ecommerce.Orders.Infrastructure.Repositories
 {
     public class OrderRepository : RepositoryBase<Order>, IOrderRepository
     {
-        protected readonly OrderContext _orderContext;
+
         public OrderRepository(OrderContext dbContext): base(dbContext)
         {
             
         }
         public async Task<IEnumerable> GetOrdersByUserName(string username)
         {
-            var ordersList = await _orderContext.Orders.Where(a => a.UserName == username).ToListAsync();
+            var ordersList = await _dbContext.Orders.Where(a => a.UserName == username).ToListAsync();
             return ordersList;
         }
     }

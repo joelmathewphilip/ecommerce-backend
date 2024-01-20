@@ -1,6 +1,13 @@
-﻿using Ecommerce.Orders.Domain.Common_Folder;
+﻿using Ecommerce.Orders.Application.Contracts.Infrastructure;
+using Ecommerce.Orders.Application.Models;
+using Ecommerce.Orders.Domain.Common_Folder;
 using Ecommerce.Orders.Domain.Entity;
+using Ecommerce.Orders.Infrastructure.Mail;
+using Ecommerce.Orders.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Ecommerce.Orders.Infrastructure.Persistence
 {
@@ -12,14 +19,16 @@ namespace Ecommerce.Orders.Infrastructure.Persistence
         }
 
 
-            public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
-        override
-        public  Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+
+
+        
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken =  new CancellationToken())
         {
-            foreach(var entry in ChangeTracker.Entries<EntityBase>())
+            foreach (var entry in ChangeTracker.Entries<EntityBase>())
             {
-                switch(entry.State)
+                switch (entry.State)
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedDate = DateTime.UtcNow;

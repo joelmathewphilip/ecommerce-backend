@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
 using Ecommerce.Orders.Application.Contracts.Persistence;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ecommerce.Orders.Application.Features.Orders.Queries.GetOrdersList
 {
