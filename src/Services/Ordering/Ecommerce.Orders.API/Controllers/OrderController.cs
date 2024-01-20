@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Orders.Application.Features.Orders.Commands.CheckoutOrder;
 using Ecommerce.Orders.Application.Features.Orders.Commands.DeleteOrder;
 using Ecommerce.Orders.Application.Features.Orders.Commands.UpdateOrder;
+using Ecommerce.Orders.Application.Features.Orders.Queries.GetAllOrdersList;
 using Ecommerce.Orders.Application.Features.Orders.Queries.GetOrdersList;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,10 +22,21 @@ namespace Ecommerce.Orders.API.Controllers
 
         [Authorize]
         [HttpGet("{username}", Name = "Get Order")]
-        [ProducesResponseType(typeof(IEnumerable<OrdersVm>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<OrdersVm>>> GetOrdersByUserName(string username)
+        [ProducesResponseType(typeof(IEnumerable<Application.Features.Orders.Queries.GetOrdersList.OrdersVm>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Application.Features.Orders.Queries.GetOrdersList.OrdersVm>>> GetOrdersByUserName(string username)
         {
             var query = new GetOrdersListQuery(username);
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpGet(Name ="Get All Orders")]
+        [ProducesResponseType(typeof(IEnumerable<Application.Features.Orders.Queries.GetAllOrdersList.OrdersVm>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<Application.Features.Orders.Queries.GetAllOrdersList.OrdersVm>), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<IEnumerable<Application.Features.Orders.Queries.GetAllOrdersList.OrdersVm>>> GetAllOrders()
+        {
+            var query = new GetAllOrdersListQuery();
             var response = await _mediator.Send(query);
             return Ok(response);
         }
@@ -39,7 +51,7 @@ namespace Ecommerce.Orders.API.Controllers
             return Ok(checkoutOrderCommand);
         }
 
-        [Authorize]
+        [Authorize(Roles ="admin")]
         [HttpPut(Name = "Update Order")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
