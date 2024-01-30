@@ -8,12 +8,7 @@ namespace Ecommerce.Account.API
         {
             return new UserInsertDto()
             {
-                Cart = new CartUserInsertDto()
-                {
-                    CartId = user.Cart.CartId,
-                    CartTotalCost = user.Cart.CartTotalCost,
-                    CartTotalQuantity = user.Cart.CartTotalQuantity
-                },
+               CartId = user.CartId,
                 Address = user.Address,
                 DefaultPaymentMode = user.DefaultPaymentMode,
                 Email = user.Email,
@@ -27,12 +22,7 @@ namespace Ecommerce.Account.API
         {
             return new UserUpdateDto()
             {
-                Cart = new CartUserUpdateDto()
-                {
-                    CartId = user.Cart.CartId,
-                    CartTotalCost = user.Cart.CartTotalCost,
-                    CartTotalQuantity = user.Cart.CartTotalQuantity
-                },
+                CartId = user.CartId,
                 Address = user.Address,
                 DefaultPaymentMode = user.DefaultPaymentMode,
                 Email = user.Email,
@@ -46,17 +36,7 @@ namespace Ecommerce.Account.API
             return new User()
             {
                 Address = userInsertDto.Address,
-                Cart = userInsertDto.Cart == null ? new UserCart()
-                {
-                    CartId = Guid.NewGuid(),
-                    CartTotalCost = 0.0,
-                    CartTotalQuantity = 0
-                } : new UserCart()
-                {
-                    CartId = userInsertDto.Cart.CartId,
-                    CartTotalCost = userInsertDto.Cart.CartTotalCost,
-                    CartTotalQuantity = userInsertDto.Cart.CartTotalQuantity
-                },
+                CartId = new Guid(),
                 DateOfCreation = DateTime.Now,
                 DefaultPaymentMode = userInsertDto.DefaultPaymentMode,
                 Email = userInsertDto.Email,
@@ -72,12 +52,7 @@ namespace Ecommerce.Account.API
             return new User()
             {
                 Address = userUpdateDto.Address ?? ExistingUser.Address,
-                Cart = (userUpdateDto.Cart != null ? new UserCart()
-                {
-                    CartId = userUpdateDto.Cart.CartId,
-                    CartTotalCost = userUpdateDto.Cart.CartTotalCost,
-                    CartTotalQuantity = userUpdateDto.Cart.CartTotalQuantity
-                } : ExistingUser.Cart),
+                CartId = ExistingUser.CartId,
                 DefaultPaymentMode = userUpdateDto.DefaultPaymentMode ?? ExistingUser.DefaultPaymentMode,
                 Email = userUpdateDto.Email ?? ExistingUser.Email,
                 Id = ExistingUser.Id,

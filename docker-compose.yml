@@ -32,6 +32,21 @@ services:
      - ecommerce.backend
     volumes:
      - "pg_data:/var/lib/postgresql/data"
+ 
+
+
+  cartdb:
+    container_name: cartdb
+    image: postgres
+    restart: unless-stopped
+    environment:
+        POSTGRES_PASSWORD: '12345'
+    ports:
+      - 5431:5432
+    networks:
+     - ecommerce.backend
+    volumes:
+     - "pg_data:/var/lib/postgresql/data"
 
   catalogservice:
     container_name: catalogservice-v1
@@ -107,7 +122,27 @@ services:
       - ecommerce.backend
     depends_on:
       - orderdb
-   
+
+  cartservice:
+    container_name: cartservice-v1
+    image: 'cartservice:v1'
+    build:
+      context: .
+      dockerfile: src/Services/Ecommerce.Cart.API/Dockerfile
+    ports:
+      - '5008:80'
+      - '5009:443'
+    environment:
+      'PostgresDbSettings:postgresHost': 'cartdb'
+      'PostgresDbSettings:postgresPassword': '12345'
+      'PostgresDbSettings:postgresUser': 'postgres'
+      'PostgresDbSettings:postgresPort': '5431'
+      'ASPNETCORE_ENVIRONMENT': 'Development'
+    networks:
+      - ecommerce.backend
+    depends_on:
+      - cartdb
+ 
   rabbitmq:
      restart: always
      container_name: rabbitmq

@@ -11,14 +11,9 @@ namespace Ecommerce.Account.API.Model
         public Address? Address { get; set; }
         public List<Guid>? Orders { get; set; }
         public string? Mobile { get; set; }
-        public CartUserUpdateDto? Cart { get; set; }
+        public Guid CartId { get; set; }
         public string? DefaultPaymentMode { get; set; }
     }
 
-    public class CartUserUpdateDto
-    {
-        public double CartTotalCost { get; set; }
-        public long CartTotalQuantity { get; set; }
-        public Guid CartId { get; set; }
-    }
+
 }

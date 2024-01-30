@@ -16,16 +16,10 @@ namespace Ecommerce.Account.API.Model
 
         [Required] 
         public string Mobile { get; set; }
-        public CartUserInsertDto? Cart { get; set; }
+        public Guid CartId { get; set; }
         [Required]
         public string DefaultPaymentMode { get; set; }
     }
 
-    public class CartUserInsertDto
-    {
-        public double CartTotalCost { get; set; }
-        public long CartTotalQuantity { get; set; }
-        public Guid CartId { get; set; }
-    }
 
 }

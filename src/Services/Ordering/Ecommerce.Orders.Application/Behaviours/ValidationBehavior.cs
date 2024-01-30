@@ -1,5 +1,4 @@
-﻿using Ecommerce.Orders.Application.Exceptions;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using ValidationException = Ecommerce.Orders.Application.Exceptions.ValidationException;
 namespace Ecommerce.Orders.Application.Behaviours
