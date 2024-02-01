@@ -20,8 +20,8 @@ services:
         source: ecommerce_data
         target: /data/db
 
-  orderdb:
-    container_name: orderdb
+  postgresdb:
+    container_name: postgresdb
     image: postgres
     restart: unless-stopped
     environment:
@@ -33,8 +33,6 @@ services:
     volumes:
      - "pg_data:/var/lib/postgresql/data"
  
-
-
   cartdb:
     container_name: cartdb
     image: postgres
@@ -42,7 +40,7 @@ services:
     environment:
         POSTGRES_PASSWORD: '12345'
     ports:
-      - 5431:5432
+      - 5431:5431
     networks:
      - ecommerce.backend
     volumes:
@@ -102,26 +100,8 @@ services:
       - ecommerce.backend
     depends_on:
       - mongo
-
-  orderingservice:
-    container_name: orderingservice-v1
-    image: 'orderingservice:v1'
-    build:
-      context: .
-      dockerfile: src/Services/Ordering/Ecommerce.Orders.API/Dockerfile
-    ports:
-      - '5006:80'
-      - '5007:443'
-    environment:
-      'PostgresDbSettings:postgresHost': 'orderdb'
-      'PostgresDbSettings:postgresPassword': '12345'
-      'PostgresDbSettings:postgresUser': 'postgres'
-      'PostgresDbSettings:postgresPort': '5432'
-      'ASPNETCORE_ENVIRONMENT': 'Development'
-    networks:
-      - ecommerce.backend
-    depends_on:
-      - orderdb
+      - cartservice
+      - rabbitmq   
 
   cartservice:
     container_name: cartservice-v1
@@ -133,16 +113,39 @@ services:
       - '5008:80'
       - '5009:443'
     environment:
-      'PostgresDbSettings:postgresHost': 'cartdb'
+      'PostgresDbSettings:postgresHost': 'postgresdb'
       'PostgresDbSettings:postgresPassword': '12345'
       'PostgresDbSettings:postgresUser': 'postgres'
-      'PostgresDbSettings:postgresPort': '5431'
+      'PostgresDbSettings:postgresPort': '5432'
       'ASPNETCORE_ENVIRONMENT': 'Development'
     networks:
       - ecommerce.backend
     depends_on:
-      - cartdb
+      - postgresdb
+      - rabbitmq
  
+
+  orderingservice:
+    container_name: orderingservice-v1
+    image: 'orderingservice:v1'
+    build:
+      context: .
+      dockerfile: src/Services/Ordering/Ecommerce.Orders.API/Dockerfile
+    ports:
+      - '5006:80'
+      - '5007:443'
+    environment:
+      'PostgresDbSettings:postgresHost': 'postgresdb'
+      'PostgresDbSettings:postgresPassword': '12345'
+      'PostgresDbSettings:postgresUser': 'postgres'
+      'PostgresDbSettings:postgresPort': '5432'
+      'ASPNETCORE_ENVIRONMENT': 'Development'
+    networks:
+      - ecommerce.backend
+    depends_on:
+      - postgresdb
+
+
   rabbitmq:
      restart: always
      container_name: rabbitmq

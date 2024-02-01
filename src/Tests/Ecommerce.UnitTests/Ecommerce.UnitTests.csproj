@@ -44,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Services\Ecommerce.Account.API\Ecommerce.Account.API.csproj" />
     <ProjectReference Include="..\..\Services\Ecommerce.Catalog.API\Ecommerce.Catalog.API.csproj" />
     <ProjectReference Include="..\..\Shared\Ecommerce.Shared\Ecommerce.Shared.csproj" />
   </ItemGroup>

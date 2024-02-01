@@ -16,6 +16,19 @@ namespace Ecommerce.Cart.API.Repository
             _logger = logger;
         }
 
+        public async Task<int> CreateCart(string UserId, string CartId)
+        {
+            try
+            {
+                string insertQuery = "INSERT INTO UserCart WHERE VALUES (@UserId, @CartId)";
+                return await _dbConnection.ExecuteAsync(insertQuery, new { UserId, CartId });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Failed to insert cart data",ex);
+                throw;
+            }
+        }
         public async Task<dynamic> AddItem(CartItem cartItem, string cartId)
         {
             try
@@ -39,9 +52,8 @@ namespace Ecommerce.Cart.API.Repository
                 _logger.LogError("Failed to add item to cart", ex);
                 throw;
             }
-
-
         }
+
 
         public async Task<int> DeleteItem(string cartid, string itemId)
         {
@@ -99,7 +111,6 @@ namespace Ecommerce.Cart.API.Repository
                     noOfItems = response.Sum(item => item.itemquantity),
                     totalCost = response.Sum(item => item.itemcost)
                 };
-
                 return cart;
             }
             catch (Exception ex)

@@ -32,14 +32,27 @@ namespace Ecommerce.Cart.API.Controllers
         {
             try
             {
-                return Ok(await _repository.GetCart(id));
+                var result = await _repository.GetCart(id);
+                if(result == null)
+                {
+                    _controllerError.statusCode = 500;
+                    _controllerError.message = "Cart does not exist";
+                    _controllerError.errorObject = null;
+                    return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
+                }
+                else
+                {
+                    return Ok(result);
+                }
+
+
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 _controllerError.statusCode = 500;
-                _controllerError.message = ex.Message;
-                _controllerError.errorObject = ex;
+                _controllerError.message = ex.Message.ToString();
+                _controllerError.errorObject = null;
                 return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
             }
 
@@ -57,8 +70,8 @@ namespace Ecommerce.Cart.API.Controllers
             {
                 _logger.LogError(ex.Message);
                 _controllerError.statusCode = 500;
-                _controllerError.message = ex.Message;
-                _controllerError.errorObject = ex;
+               _controllerError.message = ex.Message.ToString();
+                _controllerError.errorObject = null;
                 return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
             }
         }
@@ -100,7 +113,7 @@ namespace Ecommerce.Cart.API.Controllers
             {
                 _logger.LogError(ex.Message);
                 _controllerError.statusCode = 500;
-                _controllerError.message = ex.Message;
+                _controllerError.message = ex.Message.ToString();
                 _controllerError.errorObject = ex;
                 return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
             }
