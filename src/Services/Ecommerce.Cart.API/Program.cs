@@ -22,7 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-var postgresConfig = builder.Configuration.GetSection("PostgresDbSettings").Get<PostgresDbSettings>();
+var postgresConfig = builder.Configuration.GetSection(nameof(PostgresDbSettings)).Get<PostgresDbSettings>();
 builder.Services.AddSingleton<IDbConnection>(item =>
 {
     return new NpgsqlConnection(postgresConfig.connString);

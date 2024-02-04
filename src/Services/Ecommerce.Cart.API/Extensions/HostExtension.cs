@@ -4,6 +4,7 @@ using System.Reflection;
 
 namespace Ecommerce.Cart.API.Extensions
 {
+    
     public static class DatabaseExtension
     {
         public static IHost MigrateDatabase<TContext>(this IHost host, string connString)

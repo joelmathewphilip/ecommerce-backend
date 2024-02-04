@@ -109,7 +109,7 @@ services:
       'RabbitMqSettings:password': 'guest'
       'RabbitMqSettings:username': 'guest'
       'RabbitMqSettings:hostname': 'rabbitmq'
-      'RabbitMqSettings:port': '5762'
+      'RabbitMqSettings:port': '5672'
     networks:
       - ecommerce.backend
     depends_on:
@@ -132,11 +132,16 @@ services:
       'PostgresDbSettings:postgresUser': 'postgres'
       'PostgresDbSettings:postgresPort': '5432'
       'ASPNETCORE_ENVIRONMENT': 'Development'
+      'RabbitMqSettings:password': 'guest'
+      'RabbitMqSettings:username': 'guest'
+      'RabbitMqSettings:hostname': 'rabbitmq'
+      'RabbitMqSettings:port': '5672'
     networks:
       - ecommerce.backend
     depends_on:
       - postgresdb
       - rabbitmq
+      - orderingservice
  
 
   orderingservice:
