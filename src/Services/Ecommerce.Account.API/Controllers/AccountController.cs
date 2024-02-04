@@ -1,6 +1,8 @@
 ﻿using Ecommerce.Account.API.Interfaces;
 using Ecommerce.Account.API.Model;
 using Ecommerce.Shared.Models;
+using EventBus.Messages.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +17,17 @@ namespace Ecommerce.Account.API.Controllers
         // GET: api/<CatalogItemsController>
         private readonly IUserRepository _repository;
         private readonly ILogger<AccountController> _logger;
+        private readonly IBusControl _busControl;
+        private readonly IPublishEndpoint _publishEndpoint;
+        
         public ControllerError controllerError;
-        public AccountController(IUserRepository repository, ILogger<AccountController> logger)
+        public AccountController(IUserRepository repository, ILogger<AccountController> logger, IBusControl busControl, IPublishEndpoint publishEndpoint)
         {
             _repository = repository;
             _logger = logger;
             controllerError = new ControllerError();
+            _busControl = busControl;
+            _publishEndpoint = publishEndpoint;
         }
         [HttpGet("users")]
         public async Task<ActionResult<IEnumerable<User>?>> GetUsersAsync()
@@ -83,7 +90,17 @@ namespace Ecommerce.Account.API.Controllers
             try
             {
                 var userItem = userInsertDto.AsUser();
+                
                 await _repository.AddUserAsync(userItem);
+                await _busControl.Send(new AccountCreationEvent
+                { AccountId = userItem.Id, CartId=userItem.CartId });
+                //await _publishEndpoint.Publish<AccountCreationEvent>(new AccountCreationEvent { AccountId = userItem.Id, CartId = userItem.CartId });
+                
+                /*await _publishEndpoint.Publish(new AccountCreationEvent()
+                {
+                   AccountId = userItem.Id,
+                    CartId = userItem.CartId
+                });*/
                 _logger.LogInformation($"Finished executing {nameof(AddUserAsync)}");
                 return CreatedAtAction(nameof(AddUserAsync), userItem.AsUserInsertDto());
             }

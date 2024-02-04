@@ -1,6 +1,8 @@
+using Ecommerce.Cart.API;
 using Ecommerce.Cart.API.Extensions;
 using Ecommerce.Cart.API.Repository;
 using Ecommerce.Shared;
+using MassTransit;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using System.Data;
@@ -29,8 +31,29 @@ builder.Services.AddSingleton<ICartRepository, PostgresRepo>();
 builder.Logging.AddConsole();
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogAPI", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Cart API", Version = "v1" });
 
+});
+
+
+builder.Services.AddMassTransit(bus =>
+{
+
+    bus.AddConsumer<CreateCartConsumer>();
+    //rabbit mq configuration
+    bus.UsingRabbitMq((ctx, cfg) =>
+    {
+        var hostConnString = builder.Configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>().connString;
+        cfg.Host(hostConnString);
+        cfg.ReceiveEndpoint(builder.Configuration.GetSection(Constants.CartServiceQueueName).Get<string>(), c =>
+        {
+            c.ConfigureConsumer<CreateCartConsumer>(ctx);
+        });
+
+
+        //ctx.ReceiveEndpoint(host, );
+
+    });
 });
 
 var app = builder.Build();
@@ -56,6 +79,8 @@ app.UseSwaggerUI(c =>
     //'https://localhost:<port>/<routeprefix>/api/catalog/swagger/{documentname}/swagger.json' url
     c.RoutePrefix = "api/cart/swagger";
 });
+
+
 
 app.UseHttpsRedirection();
 

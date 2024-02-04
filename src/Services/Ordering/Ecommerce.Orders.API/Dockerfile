@@ -23,4 +23,4 @@ RUN dotnet publish "Ecommerce.Orders.API.csproj" -c Release -o /app/publish /p:U
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Ecommerce.Orders.API.dll","--server.urls","http://+:80;https://+:443"]
+ENTRYPOINT ["dotnet", "Ecommerce.Orders.API.dll"]

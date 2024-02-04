@@ -8,7 +8,6 @@ namespace Ecommerce.Account.API.Model
     {
         public string Name { get; set; }
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public Guid Id { get; set; } 
         public string Email { get; set; }   
         public DateTime DateOfCreation { get; set; }    

@@ -26,5 +26,9 @@
         public static string OrderingIdentityAudienceSettingName = "JWTAuth:Audience";
         public static string OrderingIdentityIssuerSettingName = "JWTAuth:Issuer";
         public static string OrderingIdentitySigningKeySettingName = "JWTAuth:Key";
+
+        public static string CartServiceQueueName = "cart-create-queue-name";
+
+
     }
 }

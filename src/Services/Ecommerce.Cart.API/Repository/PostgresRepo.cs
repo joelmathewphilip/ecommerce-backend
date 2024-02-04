@@ -11,21 +11,20 @@ namespace Ecommerce.Cart.API.Repository
         private readonly ILogger<PostgresRepo> _logger;
         public PostgresRepo(IDbConnection dbConnection, ILogger<PostgresRepo> logger)
         {
-            //_dbConnection = dapper;
             _dbConnection = dbConnection;
             _logger = logger;
         }
 
-        public async Task<int> CreateCart(string UserId, string CartId)
+        public async Task<int> CreateCart(string CartId, string UserId)
         {
             try
             {
-                string insertQuery = "INSERT INTO UserCart WHERE VALUES (@UserId, @CartId)";
+                string insertQuery = "INSERT INTO UserCart  (UserId, CartId) VALUES (@UserId, @CartId)";
                 return await _dbConnection.ExecuteAsync(insertQuery, new { UserId, CartId });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError("Failed to insert cart data",ex);
+                _logger.LogError("Failed to insert cart data", ex);
                 throw;
             }
         }
@@ -88,6 +87,19 @@ namespace Ecommerce.Cart.API.Repository
             }
         }*/
 
+        public async Task<int> CartExists(string cartId)
+        {
+            try
+            {
+                string fetchCart = "select * from UserCart where Cartid = @CartId";
+                return await _dbConnection.ExecuteAsync(fetchCart, new { @CartId = cartId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Could not fetch cart");
+                throw;
+            }
+        }
         public async Task<CartEntity> GetCart(string cartId)
         {
             try

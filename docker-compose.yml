@@ -20,6 +20,16 @@ services:
         source: ecommerce_data
         target: /data/db
 
+  rabbitmq:
+     restart: always
+     container_name: rabbitmq
+     image: rabbitmq:3-management-alpine
+     networks:
+      - ecommerce.backend
+     ports:
+       - 5672:5672
+       - 15672:15672
+
   postgresdb:
     container_name: postgresdb
     image: postgres
@@ -96,6 +106,10 @@ services:
       'MongoDbSettings:mongoHost': mongo
       'MongoDbSettings:mongoPassword': '12345'
       'MongoDbSettings:mongoPort': '27017'
+      'RabbitMqSettings:password': 'guest'
+      'RabbitMqSettings:username': 'guest'
+      'RabbitMqSettings:hostname': 'rabbitmq'
+      'RabbitMqSettings:port': '5762'
     networks:
       - ecommerce.backend
     depends_on:
@@ -146,13 +160,7 @@ services:
       - postgresdb
 
 
-  rabbitmq:
-     restart: always
-     container_name: rabbitmq
-     image: rabbitmq:3-management-alpine
-     ports:
-       - 5672:5672
-       - 15672:15672
+
 
 
 

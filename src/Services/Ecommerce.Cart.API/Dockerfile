@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/Services/Ecommerce.Cart.API/Ecommerce.Cart.API.csproj", "src/Services/Ecommerce.Cart.API/"]
+COPY ["src/BuildingBlocks/EventBus.Messages/EventBus.Messages.csproj", "src/BuildingBlocks/EventBus.Messages/"]
 COPY ["src/Shared/Ecommerce.Shared/Ecommerce.Shared.csproj", "src/Shared/Ecommerce.Shared/"]
 RUN dotnet restore "src/Services/Ecommerce.Cart.API/Ecommerce.Cart.API.csproj"
 COPY . .

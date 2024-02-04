@@ -1,16 +1,20 @@
-using MongoDB.Driver;
-using Ecommerce.Account.API.Repository;
 using Ecommerce.Account.API.Interfaces;
+using Ecommerce.Account.API.Repository;
 using Ecommerce.Shared;
-using Microsoft.OpenApi.Models;
+using EventBus.Messages.Events;
+using MassTransit;
+using MassTransit.Mediator;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddUserSecrets<Program>(true)
     .AddEnvironmentVariables();
 
 var aiOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions();
@@ -95,6 +99,21 @@ builder.Services.AddSingleton<IUserRepository, MongoDbUserRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//mass transit configuration
+builder.Services.AddMassTransit(bus =>
+{
+    //rabbit mq configuration
+    bus.UsingRabbitMq((ctx, factoryConfigurator) =>
+    {
+        EndpointConvention.Map<AccountCreationEvent>(new Uri("queue:"+builder.Configuration.GetSection(Constants.CartServiceQueueName).Get<string>()));
+        string connString = builder.Configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>().connString;
+        factoryConfigurator.Host(new Uri(connString));
+    });
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

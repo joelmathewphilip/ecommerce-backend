@@ -36,7 +36,7 @@ namespace Ecommerce.Account.API
             return new User()
             {
                 Address = userInsertDto.Address,
-                CartId = new Guid(),
+                CartId = Guid.NewGuid(),
                 DateOfCreation = DateTime.Now,
                 DefaultPaymentMode = userInsertDto.DefaultPaymentMode,
                 Email = userInsertDto.Email,

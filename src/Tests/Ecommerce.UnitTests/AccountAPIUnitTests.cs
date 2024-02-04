@@ -1,5 +1,7 @@
 ﻿using Ecommerce.Account.API.Controllers;
 using Ecommerce.Account.API.Interfaces;
+using MassTransit;
+using MassTransit.Transports;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -12,6 +14,7 @@ namespace Ecommerce.UnitTests
         private AccountController accountController;
         private ILogger<AccountController> _logger;
         private IConfiguration _configuration;
+        private IPublishEndpoint publishEndpoint;
 
         public AccountAPIUnitTests()
         {
@@ -21,7 +24,8 @@ namespace Ecommerce.UnitTests
                 .AddEnvironmentVariables()
                 .Build();
             _repository = Substitute.For<IUserRepository>();
-            accountController = new AccountController(_repository, _logger);
+            //publishEndpoint = new PublishEndpoint();
+            //accountController = new AccountController(_repository, _logger);
         }
     }
 }

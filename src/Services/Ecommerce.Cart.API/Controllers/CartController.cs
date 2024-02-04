@@ -28,12 +28,17 @@ namespace Ecommerce.Cart.API.Controllers
         }*/
 
         [HttpGet("{id}", Name = "Get Cart")]
-        public async Task<ActionResult<CartEntity>> GetCart(string id)
+        public async Task<ActionResult<CartEntity>> GetCart(string cartId)
         {
             try
             {
-                var result = await _repository.GetCart(id);
-                if(result == null)
+                if (await _repository.CartExists(cartId) < 1)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "Cart Does not exist");
+                }
+
+                var result = await _repository.GetCart(cartId);
+                if (result == null)
                 {
                     _controllerError.statusCode = 500;
                     _controllerError.message = "Cart does not exist";
@@ -59,18 +64,23 @@ namespace Ecommerce.Cart.API.Controllers
         }
 
         [HttpPost("{id}", Name = "Add to Cart")]
-        public async Task<ActionResult> AddToCart([FromBody] CartItem cartItem, string id)
+        public async Task<ActionResult> AddToCart([FromBody] CartItem cartItem, string cartId)
         {
             try
             {
-                var cart = await _repository.AddItem(cartItem, id);
+                if (await _repository.CartExists(cartId) < 1)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "Cart Does not exist");
+                }
+
+                var cart = await _repository.AddItem(cartItem, cartId);
                 return Ok(cart);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 _controllerError.statusCode = 500;
-               _controllerError.message = ex.Message.ToString();
+                _controllerError.message = ex.Message.ToString();
                 _controllerError.errorObject = null;
                 return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
             }
@@ -92,11 +102,16 @@ namespace Ecommerce.Cart.API.Controllers
 
 
         [HttpPost("{cartid}/removeitem")]
-        public async Task<ActionResult> RemoveFromCart([FromBody] string itemId, string cartid)
+        public async Task<ActionResult> RemoveFromCart([FromBody] string itemId, string cartId)
         {
             try
             {
-                int resp = await _repository.DeleteItem(cartid, itemId);
+                if (await _repository.CartExists(cartId) < 1)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "Cart Does not exist");
+                }
+
+                int resp = await _repository.DeleteItem(cartId, itemId);
                 if (resp == 0)
                 {
                     _controllerError.statusCode = 500;

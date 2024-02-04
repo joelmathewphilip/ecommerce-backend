@@ -9,6 +9,8 @@ namespace Ecommerce.Cart.API.Repository
         Task<dynamic> AddItem(CartItem cartItem, string cartId);
         public Task<CartEntity> GetCart(string cartId);
         public Task<int> DeleteItem(string cartId, string itemId);
+        public Task<int> CartExists(string cartid);
+        public Task<int> CreateCart(string cartId, string accountId);
             
     }
 }

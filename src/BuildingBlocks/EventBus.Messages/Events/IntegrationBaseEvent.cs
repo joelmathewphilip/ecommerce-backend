@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EventBus.Messages.Events
+﻿namespace EventBus.Messages.Events
 {
     public class IntegrationBaseEvent
     {
         public IntegrationBaseEvent()
         {
-            guid = new Guid();
+            guid = Guid.NewGuid();
             eventDatetime = DateTime.UtcNow;
         }
         public IntegrationBaseEvent(Guid guid, DateTime dateTime)
@@ -18,7 +12,7 @@ namespace EventBus.Messages.Events
             this.guid = guid;
             this.eventDatetime = dateTime;
         }
-        public Guid guid { get; set; }
-        public DateTime eventDatetime { get; set; }
+        public Guid guid { get; private set; }
+        public DateTime eventDatetime { get; private set; }
     }
 }

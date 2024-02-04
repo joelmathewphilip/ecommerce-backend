@@ -9,6 +9,7 @@
         public double DiscountedPrice { get; set; }
         public double CatalogMrp { get; set; }
         public string CatalogType { get; set; }
+        public int CatalogQuantity { get; set; }
         public List<string> CatalogImages { get; set; }
     }
 }

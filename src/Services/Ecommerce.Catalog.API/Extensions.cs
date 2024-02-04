@@ -14,7 +14,9 @@ namespace Catalog.API
                 CatalogName = catalogItemDto.CatalogName,
                 CatalogType = catalogItemDto.CatalogType,
                 CatalogImages = catalogItemDto.CatalogImages,
+                CatalogQuantity = catalogItemDto.CatalogQuantity,
                 CatalogId = Guid.NewGuid(),
+
             };
         }
 
@@ -28,6 +30,7 @@ namespace Catalog.API
                 CatalogType = catalogItemUpdateDto.CatalogType ?? oldItem.CatalogType,
                 CatalogImages = catalogItemUpdateDto.CatalogImages ?? oldItem.CatalogImages,
                 CatalogId = oldItem.CatalogId,
+                CatalogQuantity = catalogItemUpdateDto.CatalogQuantity,
                 CatalogDateOfCreation = oldItem.CatalogDateOfCreation
             };
         }
@@ -43,7 +46,8 @@ namespace Catalog.API
                 CatalogType = catalogItem.CatalogType,
                 DiscountedPrice = catalogItem.DiscountedPrice,
                 CatalogImages = catalogItem.CatalogImages,
-                CatalogId = catalogItem.CatalogId
+                CatalogId = catalogItem.CatalogId,
+                CatalogQuantity = catalogItem.CatalogQuantity
             };
         }
 
