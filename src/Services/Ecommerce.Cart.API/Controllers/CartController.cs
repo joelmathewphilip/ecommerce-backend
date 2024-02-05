@@ -27,7 +27,7 @@ namespace Ecommerce.Cart.API.Controllers
 
         }*/
 
-        [HttpGet("{id}", Name = "Get Cart")]
+        [HttpGet("{cartId}", Name = "Get Cart")]
         public async Task<ActionResult<CartEntity>> GetCart(string cartId)
         {
             try
@@ -63,7 +63,7 @@ namespace Ecommerce.Cart.API.Controllers
 
         }
 
-        [HttpPost("{id}", Name = "Add to Cart")]
+        [HttpPost("{cartId}", Name = "Add to Cart")]
         public async Task<ActionResult> AddToCart([FromBody] CartItem cartItem, string cartId)
         {
             try
@@ -101,7 +101,7 @@ namespace Ecommerce.Cart.API.Controllers
         }*/
 
 
-        [HttpPost("{cartid}/removeitem")]
+        [HttpPost("{cartId}/removeitem")]
         public async Task<ActionResult> RemoveFromCart([FromBody] string itemId, string cartId)
         {
             try

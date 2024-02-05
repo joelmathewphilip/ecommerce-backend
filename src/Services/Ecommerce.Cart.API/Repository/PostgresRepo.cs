@@ -38,7 +38,7 @@ namespace Ecommerce.Cart.API.Repository
                 if (existingCartItem == null)
                 {
                     string insertQuery = "INSERT INTO CartItems (CartId, ItemId, ItemQuantity, ItemCost) VALUES (@CartId, @ItemId, @ItemQuantity, @ItemCost)";
-                    return await _dbConnection.ExecuteAsync(insertQuery, cartItem);
+                    return await _dbConnection.ExecuteAsync(insertQuery, new {CartId = cartId, ItemId = cartItem.itemid, ItemQuantity = cartItem.itemquantity, ItemCost = cartItem.itemcost });
                 }
                 else
                 {
@@ -92,7 +92,8 @@ namespace Ecommerce.Cart.API.Repository
             try
             {
                 string fetchCart = "select * from UserCart where Cartid = @CartId";
-                return await _dbConnection.ExecuteAsync(fetchCart, new { @CartId = cartId });
+                var result =  await _dbConnection.QueryAsync(fetchCart, new { @CartId = cartId });
+                return result.Count();
             }
             catch (Exception ex)
             {
@@ -121,7 +122,10 @@ namespace Ecommerce.Cart.API.Repository
                         })
                         .ToList(),
                     noOfItems = response.Sum(item => item.itemquantity),
-                    totalCost = response.Sum(item => item.itemcost)
+                    totalCost = response.Sum(item =>
+                    {
+                        return item.itemquantity * item.itemcost;
+                    })
                 };
                 return cart;
             }
