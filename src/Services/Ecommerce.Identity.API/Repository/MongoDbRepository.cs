@@ -34,12 +34,13 @@ namespace Ecommerce.Identity.API.Repository
             try
             {
                 var filter = _filterDefinition.Eq(item => item.username,username);
-                return await _mongoCollection.Find(filter).SingleOrDefaultAsync();
+                var value  =  await _mongoCollection.Find(filter).FirstOrDefaultAsync();
+                return value;
             }
             catch(Exception exception)
             {
                 _logger.LogError("An error occured while running" + nameof(FetchRegisteredUsers)+"," + exception);
-                throw exception;
+                throw;
             }
         }
     }

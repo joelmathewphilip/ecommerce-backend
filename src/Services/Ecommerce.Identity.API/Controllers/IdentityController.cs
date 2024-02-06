@@ -3,6 +3,7 @@ using Ecommerce.Shared;
 using Ecommerce.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -41,6 +42,12 @@ namespace Ecommerce.Identity.API.Controllers
             {
                 byte[] passwordKey;
                 byte[] passwordHash;
+                if(await _repository.FetchRegisteredUsers(loginDto.username) != null)
+                {
+                    _controllerError.statusCode = 400;
+                    _controllerError.message = "User aready exists";
+                    return BadRequest(_controllerError);  
+                }
                 CreatePasswordHash(loginDto.password, out passwordKey, out passwordHash);
                 UserIdentity user = new UserIdentity()
                 {
@@ -52,7 +59,6 @@ namespace Ecommerce.Identity.API.Controllers
                 await _repository.AddData(user);
                 _logger.LogInformation("Finished executing" + nameof(UserRegister));
                 return CreatedAtAction(nameof(UserRegister), user.username, user);
-                //return Ok("User Registed Successfully");
             }
             catch (Exception ex)
             {

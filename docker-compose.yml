@@ -43,22 +43,9 @@ services:
     volumes:
      - "pg_data:/var/lib/postgresql/data"
  
-  cartdb:
-    container_name: cartdb
-    image: postgres
-    restart: unless-stopped
-    environment:
-        POSTGRES_PASSWORD: '12345'
-    ports:
-      - 5431:5431
-    networks:
-     - ecommerce.backend
-    volumes:
-     - "pg_data:/var/lib/postgresql/data"
-
   catalogservice:
     container_name: catalogservice-v1
-    image: 'catalogservice:v1'
+    image: 'ecommerce/catalogservice:v1'
     build:
       context: .
       dockerfile: src/Services/Ecommerce.Catalog.API/Dockerfile
@@ -77,7 +64,7 @@ services:
 
   identityservice:
     container_name: identityservice-v1
-    image: 'identityservice:v1'
+    image: 'ecommerce/identityservice:v1'
     build:
       context: .
       dockerfile: src/Services/Ecommerce.Identity.API/Dockerfile
@@ -95,7 +82,7 @@ services:
 
   accountservice:
     container_name: accountservice-v1
-    image: 'accountservice:v1'
+    image: 'ecommerce/accountservice:v1'
     build:
       context: .
       dockerfile: src/Services/Ecommerce.Account.API/Dockerfile
@@ -119,7 +106,7 @@ services:
 
   cartservice:
     container_name: cartservice-v1
-    image: 'cartservice:v1'
+    image: 'ecommerce/cartservice:v1'
     build:
       context: .
       dockerfile: src/Services/Ecommerce.Cart.API/Dockerfile
@@ -146,7 +133,7 @@ services:
 
   orderingservice:
     container_name: orderingservice-v1
-    image: 'orderingservice:v1'
+    image: 'ecommerce/orderingservice:v1'
     build:
       context: .
       dockerfile: src/Services/Ordering/Ecommerce.Orders.API/Dockerfile
