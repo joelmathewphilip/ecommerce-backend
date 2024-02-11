@@ -36,6 +36,16 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddLogging();
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 // Add services to the container.
 builder.Services.AddControllers(options =>
 {
@@ -69,7 +79,7 @@ app.UseSwaggerUI(c =>
     //'https://localhost:<port>/<routeprefix>/api/identity/swagger/{documentname}/swagger.json' url
     c.RoutePrefix = "api/identity/swagger";
 });
-
+app.UseCors("AllowAnyOrigin");
 
 app.UseRouting();
 app.UseHttpsRedirection();
