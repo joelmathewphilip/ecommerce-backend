@@ -1,8 +1,7 @@
 ﻿using Ecommerce.Catalog.API.Interfaces;
-using  Ecommerce.Catalog.API.Models;
-using MongoDB.Driver;
+using Ecommerce.Catalog.API.Models;
 using Ecommerce.Shared;
-using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Ecommerce.Catalog.API.Repositories
 {

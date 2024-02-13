@@ -6,7 +6,6 @@ namespace Ecommerce.Catalog.API.Models
     public record CatalogItem
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public Guid CatalogId { get; set; }
         public string CatalogName { get; set; }
         public string CatalogDescription { get; set; }

@@ -53,7 +53,7 @@ namespace Ecommerce.Catalog.API.Controllers
             {
                 _logger.LogError(ex, String.Format("Failed to execute  {0}", nameof(GetCatalogItemsAsync)));
                 controllerError.statusCode = 500;
-                controllerError.message = "An error occured while processing";
+                controllerError.message = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, controllerError);
 
             }

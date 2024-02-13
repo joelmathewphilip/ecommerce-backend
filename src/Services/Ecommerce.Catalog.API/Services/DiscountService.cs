@@ -51,7 +51,7 @@ namespace Ecommerce.Catalog.API.Services
             catch (Exception)
             {
                 _logger.LogError($"{nameof(FetchDiscountedPrice)} failed to execute");
-                throw;
+                throw new Exception("Discount Service is not running");
 
             }
         }

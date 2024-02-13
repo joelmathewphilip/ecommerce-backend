@@ -21,28 +21,28 @@ services:
         target: /data/db
 
   rabbitmq:
-     restart: always
-     container_name: rabbitmq
-     image: rabbitmq:3-management-alpine
-     networks:
+    restart: always
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    networks:
       - ecommerce.backend
-     ports:
-       - 5672:5672
-       - 15672:15672
+    ports:
+      - 5672:5672
+      - 15672:15672
 
   postgresdb:
     container_name: postgresdb
     image: postgres
     restart: unless-stopped
     environment:
-        POSTGRES_PASSWORD: '12345'
+      POSTGRES_PASSWORD: '12345'
     ports:
       - 5432:5432
     networks:
-     - ecommerce.backend
+      - ecommerce.backend
     volumes:
-     - "pg_data:/var/lib/postgresql/data"
- 
+      - "pg_data:/var/lib/postgresql/data"
+
   catalogservice:
     container_name: catalogservice-v1
     image: 'ecommerce/catalogservice:v1'
@@ -60,7 +60,7 @@ services:
       - ecommerce.backend
     depends_on:
       - mongo
-
+      - discountservice
 
   identityservice:
     container_name: identityservice-v1
@@ -102,7 +102,7 @@ services:
     depends_on:
       - mongo
       - cartservice
-      - rabbitmq   
+      - rabbitmq
 
   cartservice:
     container_name: cartservice-v1
@@ -129,7 +129,6 @@ services:
       - postgresdb
       - rabbitmq
       - orderingservice
- 
 
   orderingservice:
     container_name: orderingservice-v1
@@ -151,11 +150,24 @@ services:
     depends_on:
       - postgresdb
 
+  discountservice:
+    container_name: discountservice-v1
+    image: projectsofjoel/ecommerce-discountservice
+    #build: .
+    environment:
+      'MONGODB_USERNAME': 'mongoadmin'
+      'MONGODB_PASSWORD': '12345'
+      'MONGODB_PORTNUMBER': '27017'
+      'MONGODB_HOST': mongo
+      'MONGO_DB_NAME': 'ecommerce'
 
-
-
-
+    ports:
+      - "8081:8081"
+    networks:
+      - ecommerce.backend
+    depends_on: 
+      - mongo
 
 volumes:
-    ecommerce_data:
-    pg_data:
+  ecommerce_data:
+  pg_data:
