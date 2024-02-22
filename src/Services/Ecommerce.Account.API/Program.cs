@@ -100,6 +100,16 @@ builder.Services.AddSingleton<IUserRepository, MongoDbUserRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 //mass transit configuration
 builder.Services.AddMassTransit(bus =>
 {
@@ -131,7 +141,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "api/account/swagger";
 });
 
-
+app.UseCors("AllowAnyOrigin");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

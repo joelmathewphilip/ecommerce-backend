@@ -40,7 +40,7 @@ namespace Ecommerce.Account.API
                 DateOfCreation = DateTime.Now,
                 DefaultPaymentMode = userInsertDto.DefaultPaymentMode,
                 Email = userInsertDto.Email,
-                Id = Guid.NewGuid(),
+                Id = userInsertDto.Id == Guid.Empty ? Guid.NewGuid() : userInsertDto.Id,
                 Mobile = userInsertDto.Mobile,
                 Name = userInsertDto.Name,
                 Orders = userInsertDto.Orders == null ? new List<Guid>() : userInsertDto.Orders
