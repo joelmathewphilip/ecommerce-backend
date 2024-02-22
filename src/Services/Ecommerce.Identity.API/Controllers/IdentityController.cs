@@ -95,12 +95,12 @@ namespace Ecommerce.Identity.API.Controllers
                             token = CreateToken(loginDto.username, out validTill);
                         }
                         _logger.LogDebug("Finished executing method:" + nameof(Login));
-                        var httpCookie = new Microsoft.AspNetCore.Http.CookieOptions
+                        var httpCookie = new CookieOptions
                         {
                             HttpOnly = true
                         };
                         Response.Cookies.Append("AuthCookie", token, httpCookie);
-                        return Ok(new TokenDto() { jwtToken = token, ValidTill = validTill });
+                        return Ok(new TokenDto() { jwtToken = token, ValidTill = validTill, userId = userIdentity.userid });
                     }
                     else
                     {
@@ -172,10 +172,10 @@ namespace Ecommerce.Identity.API.Controllers
                 var jwt = new JwtSecurityTokenHandler().WriteToken(token);
                 return jwt;
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 _logger.LogError("An error occured while running" + nameof(CreateToken));
-                throw;
+                throw exception;
             }
 
         }
