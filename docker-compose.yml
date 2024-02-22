@@ -56,6 +56,7 @@ services:
       'MongoDbSettings:mongoHost': mongo
       'MongoDbSettings:mongoPassword': '12345'
       'MongoDbSettings:mongoPort': '27017'
+      'CouponService:Url': 'http://discountservice:8081/api/discounts'
     networks:
       - ecommerce.backend
     depends_on:
