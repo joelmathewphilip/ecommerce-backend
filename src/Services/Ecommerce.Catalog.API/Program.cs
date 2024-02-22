@@ -96,6 +96,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddAuthorization();
 var app = builder.Build();
 
@@ -115,7 +126,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "api/catalog/swagger";
 });
 
-
+app.UseCors("AllowAnyOrigin");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
