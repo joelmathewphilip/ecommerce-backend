@@ -153,7 +153,7 @@ services:
 
   discountservice:
     container_name: discountservice-v1
-    image: projectsofjoel/ecommerce-discountservice
+    image: projectsofjoel/ecommerce-discountservice:v1
     #build: .
     environment:
       'MONGODB_USERNAME': 'mongoadmin'
