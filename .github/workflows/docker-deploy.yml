@@ -38,3 +38,7 @@ jobs:
         if: ${{ contains(github.event_paths, 'src/Services/Ordering/**') }}
         run: echo "Running Step 5 because changes detected in 'src/Services/Ordering/**'"
 
+      - name: Run Step 6
+        if: ${{ contains(github.event_paths, 'src/Shared/**') }}
+        run: echo "Running Step 6 because changes detected in 'src/Shared/**'"
+
