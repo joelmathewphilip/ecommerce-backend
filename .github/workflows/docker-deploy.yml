@@ -23,7 +23,7 @@ jobs:
         run: echo "Running Step 1 because changes detected in 'src/BuildingBlocks/**'"
 
       - name: Run Step 2
-        if: ${{ contains(github.event_paths, 'src/Services/Ecommerce.Account.API/**') }}
+        if: ${{ contains(github.event.head_changes, 'src/Services/Ecommerce.Account.API/**') }}
         run: echo "Running Step 2 because changes detected in 'src/Services/Ecommerce.Account.API/**'"
 
       - name: Run Step 3
