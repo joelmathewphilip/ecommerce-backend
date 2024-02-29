@@ -6,10 +6,9 @@ on:
     branches:
       - master
     paths:
-      - 'src/**' # Change this to the first path you want to monitor
-    paths-ignore:
-      - 'src/Tests/**' 
-
+      - 'src/BuildingBlocks/**'
+      - 'src/Services/**'
+      - 'src/Shared/**'
 
 jobs:
   build:
