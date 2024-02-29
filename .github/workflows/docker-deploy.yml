@@ -9,7 +9,7 @@ on:
       - 'src/BuildingBlocks/**'
       - 'src/Services/**'
       - 'src/Shared/**'
-      -  Dockerfile
+      - '.github/workflows/docker-deploy.yml'
 
 jobs:
   build:
