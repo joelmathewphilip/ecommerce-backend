@@ -27,7 +27,7 @@ jobs:
         run: echo "Running Step 2 because changes detected in 'src/Services/Ecommerce.Account.API/**'"
 
       - name: Run Step 3
-        if: ${{ contains(github.event_paths, 'src/Services/Ecommerce.Catalog.API/**') }
+        if: ${{ contains(github.event_paths, 'src/Services/Ecommerce.Catalog.API/**') }}
         run: echo "Running Step 3 because changes detected in 'src/Services/Ecommerce.Catalog.API/**'"
 
       - name: Run Step 4
