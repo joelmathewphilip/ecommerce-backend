@@ -9,6 +9,7 @@ on:
       - 'src/BuildingBlocks/**'
       - 'src/Services/**'
       - 'src/Shared/**'
+      -  Dockerfile
 
 jobs:
   build:
@@ -38,3 +39,7 @@ jobs:
             docker build . -t projectsofjoel/ecommerce-identityservice:v1 -f src/Services/Ecommerce.Identity.API/Dockerfile
             docker push projectsofjoel/ecommerce-identityservice:v1
             echo "Build and pushed projectsofjoel/ecommerce-identityservice:v1"
+
+            docker build . -t projectsofjoel/ecommerce-orderingservice:v1 -f src/Services/Ordering/Ecommerce.Orders.API/Dockerfile
+            docker push projectsofjoel/ecommerce-orderingservice:v1
+            echo "Build and pushed projectsofjoel/ecommerce-orderingservice:v1s"
