@@ -94,13 +94,7 @@ namespace Ecommerce.Account.API.Controllers
                 await _repository.AddUserAsync(userItem);
                 await _busControl.Send(new AccountCreationEvent
                 { AccountId = userItem.Id, CartId=userItem.CartId });
-                //await _publishEndpoint.Publish<AccountCreationEvent>(new AccountCreationEvent { AccountId = userItem.Id, CartId = userItem.CartId });
-                
-                /*await _publishEndpoint.Publish(new AccountCreationEvent()
-                {
-                   AccountId = userItem.Id,
-                    CartId = userItem.CartId
-                });*/
+
                 _logger.LogInformation($"Finished executing {nameof(AddUserAsync)}");
                 return CreatedAtAction(nameof(AddUserAsync), userItem.AsUserInsertDto());
             }

@@ -19,16 +19,26 @@ namespace Ecommerce.Cart.API.Controllers
             _controllerError = new ControllerError();
         }
 
-        /*[Authorize]
 
-        [HttpGet(Name ="Get All Cart Details")]
-        public async Task<ActionResult<IEnumerable<CartEntity>>> GetAllCart()
+        [HttpGet("{cartId}", Name = "Get Brief Cart")]
+        public async Task<ActionResult<CartCount>> GetCart(string cartId)
         {
+            try
+            {
+                return await _repository.GetCart(cartId);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _controllerError.statusCode = 500;
+                _controllerError.message = ex.Message.ToString();
+                _controllerError.errorObject = null;
+                return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
+            }
+        }
 
-        }*/
-
-        [HttpGet("{cartId}", Name = "Get Cart")]
-        public async Task<ActionResult<CartEntity>> GetCart(string cartId)
+        [HttpGet("{cartId}/all", Name = "Get Complete Cart")]
+        public async Task<ActionResult<CartEntity>> GetAllCart(string cartId)
         {
             try
             {
@@ -37,7 +47,7 @@ namespace Ecommerce.Cart.API.Controllers
                     return StatusCode(StatusCodes.Status404NotFound, "Cart Does not exist");
                 }
 
-                var result = await _repository.GetCart(cartId);
+                var result = await _repository.GetCartAll(cartId);
                 if (result == null)
                 {
                     _controllerError.statusCode = 500;

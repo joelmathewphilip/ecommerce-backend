@@ -4,7 +4,6 @@
     {
         public string jwtToken { get; set; }
         public DateTime ValidTill { get; set; }
-
         public Guid userId { get; set; }    
     }
 }

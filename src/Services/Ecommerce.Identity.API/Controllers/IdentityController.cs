@@ -57,8 +57,9 @@ namespace Ecommerce.Identity.API.Controllers
                     passwordHash = passwordHash
                 };
                 await _repository.AddData(user);
+
                 _logger.LogInformation("Finished executing" + nameof(UserRegister));
-                return CreatedAtAction(nameof(UserRegister), user.username, user);
+                return CreatedAtAction(nameof(UserRegister), user.AsDto());
             }
             catch (Exception ex)
             {
@@ -97,7 +98,9 @@ namespace Ecommerce.Identity.API.Controllers
                         _logger.LogDebug("Finished executing method:" + nameof(Login));
                         var httpCookie = new CookieOptions
                         {
-                            HttpOnly = true
+                            HttpOnly = true,
+                            Expires = validTill,
+                            Domain = _config["TokenDomain"]
                         };
                         Response.Cookies.Append("AuthCookie", token, httpCookie);
                         return Ok(new TokenDto() { jwtToken = token, ValidTill = validTill, userId = userIdentity.userid });

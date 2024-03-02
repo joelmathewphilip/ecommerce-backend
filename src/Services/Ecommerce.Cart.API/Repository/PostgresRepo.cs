@@ -43,7 +43,7 @@ namespace Ecommerce.Cart.API.Repository
                 else
                 {
                     string updateQuery = "UPDATE CartItems SET ItemQuantity = @ItemQuantity, ItemCost = @ItemCost WHERE CartId = @CartId AND ItemId = @ItemId";
-                    return await _dbConnection.ExecuteAsync(updateQuery, new { ItemQuantity = existingCartItem.itemquantity + cartItem.itemquantity, ItemCost = cartItem.itemcost, CartId = cartId, ItemId = cartItem.itemid });
+                    return await _dbConnection.ExecuteAsync(updateQuery, new { ItemQuantity = cartItem.itemquantity, ItemCost = cartItem.itemcost, CartId = cartId, ItemId = cartItem.itemid });
                 }
             }
             catch (Exception ex)
@@ -69,24 +69,6 @@ namespace Ecommerce.Cart.API.Repository
             }
         }
 
-        /*public async Task<IEnumerable<CartEntity>> GetAllCarts()
-        {
-            try
-            {
-                using (var _dbConnection = _db_dbConnectionection.Create_dbConnectionection())
-                {
-                    string sql = "select * from CartItems";
-                    var cartEntity = await _dbConnection.QueryAsync<CartEntity>(sql);
-                    return cartEntity;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Failed to get all carts", ex.Message);
-                return null;
-            }
-        }*/
-
         public async Task<int> CartExists(string cartId)
         {
             try
@@ -97,11 +79,32 @@ namespace Ecommerce.Cart.API.Repository
             }
             catch (Exception ex)
             {
-                _logger.LogError("Could not fetch cart");
+                _logger.LogError("Could not fetch cart:"+ex.ToString());
                 throw;
             }
         }
-        public async Task<CartEntity> GetCart(string cartId)
+
+        public async Task<CartCount> GetCart(string cartId)
+        {
+            try
+            {
+                var totalItems = 0;
+                double totalCost = 0;
+                string sql = "SELECT * FROM CartItems WHERE cartId = @CartId";
+                var parameter = new { CartId = cartId };
+                var response = await _dbConnection.QueryAsync<CartItem>(sql,parameter);
+                 totalItems = response.Sum(item => item.itemquantity);
+                totalCost = response.Sum(item => item.itemquantity * item.itemcost);
+                return new CartCount() { cartCount = totalItems, cartCost = totalCost, CartId = Guid.Parse(cartId) };
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Failed to fetch cart details: "+ex.ToString());
+                throw;
+            }
+
+        }
+        public async Task<CartEntity> GetCartAll(string cartId)
         {
             try
             {
