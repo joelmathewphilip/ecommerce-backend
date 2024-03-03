@@ -1,10 +1,5 @@
 ﻿using Ecommerce.Catalog.API.Interfaces;
 using Ecommerce.Catalog.API.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ecommerce.Catalog.API.Services
 {

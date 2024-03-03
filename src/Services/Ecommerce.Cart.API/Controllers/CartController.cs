@@ -2,6 +2,9 @@
 using Ecommerce.Cart.API.Repository;
 using Ecommerce.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace Ecommerce.Cart.API.Controllers
 {
@@ -12,22 +15,30 @@ namespace Ecommerce.Cart.API.Controllers
         private readonly ICartRepository _repository;
         private readonly ILogger<CartController> _logger;
         private ControllerError _controllerError;
-        public CartController(ILogger<CartController> logger, ICartRepository repository)
+        private readonly IConfiguration _config;
+        public CartController(ILogger<CartController> logger, ICartRepository repository, IConfiguration configuration)
         {
             _logger = logger;
             _repository = repository;
             _controllerError = new ControllerError();
+            _config = configuration;
         }
 
 
-        [HttpGet("{cartId}", Name = "Get Brief Cart")]
-        public async Task<ActionResult<CartCount>> GetCart(string cartId)
+        [HttpGet("{cartId}/quantity", Name = "Get Brief Cart")]
+        public async Task<ActionResult<CartCount>> GetCartQuantity(string cartId)
         {
             try
             {
-                return await _repository.GetCart(cartId);
+
+                if (await _repository.CartExists(cartId) < 1)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "Cart Does not exist");
+                }
+                var result = await _repository.GetCartQuantity(cartId);
+                return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 _controllerError.statusCode = 500;
@@ -37,8 +48,8 @@ namespace Ecommerce.Cart.API.Controllers
             }
         }
 
-        [HttpGet("{cartId}/all", Name = "Get Complete Cart")]
-        public async Task<ActionResult<CartEntity>> GetAllCart(string cartId)
+        [HttpGet("{cartId}", Name = "Get Cart")]
+        public async Task<ActionResult<CartEntity>> GetCart(string cartId)
         {
             try
             {
@@ -55,11 +66,14 @@ namespace Ecommerce.Cart.API.Controllers
                     _controllerError.errorObject = null;
                     return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
                 }
-                else
+                foreach (var item in result.cartItems)
                 {
-                    return Ok(result);
+                    var response = await fetchItemCost(item);
+                    item.itemcost = response.itemcost;
+                    result.totalCost += item.itemquantity * item.itemcost;
                 }
 
+                return Ok(result);
 
             }
             catch (Exception ex)
@@ -74,17 +88,20 @@ namespace Ecommerce.Cart.API.Controllers
         }
 
         [HttpPost("{cartId}", Name = "Add to Cart")]
-        public async Task<ActionResult> AddToCart([FromBody] CartItem cartItem, string cartId)
+        public async Task<ActionResult<CartCount>> AddToCart([FromBody] CartItemDto cartItemDto, string cartId)
         {
             try
             {
+                var cartItem = CartExtensions.asCartItem(cartItemDto);
+
+
                 if (await _repository.CartExists(cartId) < 1)
                 {
                     return StatusCode(StatusCodes.Status404NotFound, "Cart Does not exist");
                 }
 
                 var cart = await _repository.AddItem(cartItem, cartId);
-                return Ok(cart);
+                return Ok(await _repository.GetCartQuantity(cartId));
             }
             catch (Exception ex)
             {
@@ -142,6 +159,40 @@ namespace Ecommerce.Cart.API.Controllers
                 _controllerError.errorObject = ex;
                 return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
             }
+        }
+
+        private async Task<CartItem> fetchItemCost(CartItem cartItem)
+        {
+            try
+            {
+                string catalogUrl = _config["CatalogUrl"] + "/" + cartItem.itemid;
+                HttpClient httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var token = await fetchToken();
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                var response = await httpClient.GetAsync(catalogUrl);
+                response.EnsureSuccessStatusCode();
+                var output = JObject.Parse(await response.Content.ReadAsStringAsync());
+                cartItem.itemcost = Double.Parse(output.Value<string>("discountedPrice"));
+                return cartItem;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while fetching catalog Costs: " + ex.Message);
+                throw new Exception("Failed to fetch CatalogCost");
+            }
+
+        }
+        private async Task<string> fetchToken()
+        {
+            string identityUrl = _config["IdentityUrl"];
+            HttpClient client = new HttpClient();
+            var body = new { username = "string", password = "string" };
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = await client.PostAsync(identityUrl, new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            var output = JObject.Parse(await response.Content.ReadAsStringAsync());
+            return output.Value<string>("jwtToken");
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Ecommerce.Cart.API.Entity
+﻿namespace Ecommerce.Cart.API.Entity
 {
     public class CartEntity
     {
@@ -18,10 +16,8 @@ namespace Ecommerce.Cart.API.Entity
     {
         public string itemid { get; set; }
 
-        [Range(1, 1000)]
         public int itemquantity { get; set; }
         
-        [Range(1, 1000)]
         public double itemcost { get; set; }
     }
 }

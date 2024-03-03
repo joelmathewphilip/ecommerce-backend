@@ -23,11 +23,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 var postgresConfig = builder.Configuration.GetSection(nameof(PostgresDbSettings)).Get<PostgresDbSettings>();
-builder.Services.AddSingleton<IDbConnection>(item =>
+builder.Services.AddTransient<IDbConnection>(item =>
 {
     return new NpgsqlConnection(postgresConfig.connString);
 });
-builder.Services.AddSingleton<ICartRepository, PostgresRepo>();
+builder.Services.AddTransient<ICartRepository, PostgresRepo>();
 builder.Logging.AddConsole();
 builder.Services.AddSwaggerGen(opt =>
 {

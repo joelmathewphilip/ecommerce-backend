@@ -2,6 +2,5 @@ CREATE TABLE CartItems (
 Id SERIAL  PRIMARY KEY,
     CartId VARCHAR(100) NOT NULL,  
     ItemId VARCHAR(100) NOT NULL, 
-    ItemQuantity INT, 
-    ItemCost DOUBLE PRECISION
+    ItemQuantity INT
 );

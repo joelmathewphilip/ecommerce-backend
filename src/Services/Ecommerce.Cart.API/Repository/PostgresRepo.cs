@@ -37,13 +37,22 @@ namespace Ecommerce.Cart.API.Repository
 
                 if (existingCartItem == null)
                 {
-                    string insertQuery = "INSERT INTO CartItems (CartId, ItemId, ItemQuantity, ItemCost) VALUES (@CartId, @ItemId, @ItemQuantity, @ItemCost)";
-                    return await _dbConnection.ExecuteAsync(insertQuery, new {CartId = cartId, ItemId = cartItem.itemid, ItemQuantity = cartItem.itemquantity, ItemCost = cartItem.itemcost });
+                    string insertQuery = "INSERT INTO CartItems (CartId, ItemId, ItemQuantity) VALUES (@CartId, @ItemId, @ItemQuantity)";
+                    return await _dbConnection.ExecuteAsync(insertQuery, new { CartId = cartId, ItemId = cartItem.itemid, ItemQuantity = cartItem.itemquantity});
                 }
                 else
                 {
-                    string updateQuery = "UPDATE CartItems SET ItemQuantity = @ItemQuantity, ItemCost = @ItemCost WHERE CartId = @CartId AND ItemId = @ItemId";
-                    return await _dbConnection.ExecuteAsync(updateQuery, new { ItemQuantity = cartItem.itemquantity, ItemCost = cartItem.itemcost, CartId = cartId, ItemId = cartItem.itemid });
+                    string updateQuery = "UPDATE CartItems SET ItemQuantity = @ItemQuantity WHERE CartId = @CartId AND ItemId = @ItemId";
+                    Object parameters;
+                    if (cartItem.itemquantity == 0)
+                    {
+                        parameters = new { ItemQuantity = existingCartItem.itemquantity + 1, CartId = cartId, ItemId = cartItem.itemid };
+                }
+                    else
+                    {
+                        parameters = new { ItemQuantity = cartItem.itemquantity, CartId = cartId, ItemId = cartItem.itemid };
+                    }
+                    return await _dbConnection.ExecuteAsync(updateQuery, parameters);
                 }
             }
             catch (Exception ex)
@@ -74,17 +83,17 @@ namespace Ecommerce.Cart.API.Repository
             try
             {
                 string fetchCart = "select * from UserCart where Cartid = @CartId";
-                var result =  await _dbConnection.QueryAsync(fetchCart, new { @CartId = cartId });
+                var result = await _dbConnection.QueryAsync(fetchCart, new { @CartId = cartId });
                 return result.Count();
             }
             catch (Exception ex)
             {
-                _logger.LogError("Could not fetch cart:"+ex.ToString());
+                _logger.LogError("Could not fetch cart:" + ex.ToString());
                 throw;
             }
         }
 
-        public async Task<CartCount> GetCart(string cartId)
+        public async Task<dynamic> GetCartQuantity(string cartId)
         {
             try
             {
@@ -92,14 +101,13 @@ namespace Ecommerce.Cart.API.Repository
                 double totalCost = 0;
                 string sql = "SELECT * FROM CartItems WHERE cartId = @CartId";
                 var parameter = new { CartId = cartId };
-                var response = await _dbConnection.QueryAsync<CartItem>(sql,parameter);
-                 totalItems = response.Sum(item => item.itemquantity);
-                totalCost = response.Sum(item => item.itemquantity * item.itemcost);
-                return new CartCount() { cartCount = totalItems, cartCost = totalCost, CartId = Guid.Parse(cartId) };
+                var response = await _dbConnection.QueryAsync<CartItem>(sql, parameter);
+                totalItems = response.Sum(item => item.itemquantity);
+                return new  { cartCount = totalItems, CartId = Guid.Parse(cartId) };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError("Failed to fetch cart details: "+ex.ToString());
+                _logger.LogError("Failed to fetch cart details: " + ex.ToString());
                 throw;
             }
 
@@ -121,14 +129,9 @@ namespace Ecommerce.Cart.API.Repository
                         {
                             itemid = group.Key,
                             itemquantity = group.Sum(item => item.itemquantity),
-                            itemcost = group.First().itemcost
                         })
                         .ToList(),
                     noOfItems = response.Sum(item => item.itemquantity),
-                    totalCost = response.Sum(item =>
-                    {
-                        return item.itemquantity * item.itemcost;
-                    })
                 };
                 return cart;
             }
