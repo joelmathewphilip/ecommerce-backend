@@ -103,7 +103,7 @@ namespace Ecommerce.Cart.API.Repository
                 var parameter = new { CartId = cartId };
                 var response = await _dbConnection.QueryAsync<CartItem>(sql, parameter);
                 totalItems = response.Sum(item => item.itemquantity);
-                return new  { cartCount = totalItems, CartId = Guid.Parse(cartId) };
+                return new  CartCount{ cartCount = totalItems, CartId = Guid.Parse(cartId) };
             }
             catch (Exception ex)
             {

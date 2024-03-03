@@ -124,6 +124,8 @@ services:
       'RabbitMqSettings:username': 'guest'
       'RabbitMqSettings:hostname': 'rabbitmq'
       'RabbitMqSettings:port': '5672'
+      'IdentityUrl': 'http://localhost:5000/api/Identity/login'
+      'CatalogUrl': 'http://localhost:5002/api/CatalogItems/items'
     networks:
       - ecommerce.backend
     depends_on:
