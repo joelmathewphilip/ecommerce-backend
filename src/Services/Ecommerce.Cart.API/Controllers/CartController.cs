@@ -2,6 +2,7 @@
 using Ecommerce.Cart.API.Repository;
 using Ecommerce.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
@@ -59,18 +60,14 @@ namespace Ecommerce.Cart.API.Controllers
                 }
 
                 var result = await _repository.GetCartAll(cartId);
-                if (result == null)
+                if (result != null)
                 {
-                    _controllerError.statusCode = 500;
-                    _controllerError.message = "Cart does not exist";
-                    _controllerError.errorObject = null;
-                    return StatusCode(StatusCodes.Status500InternalServerError, _controllerError);
-                }
-                foreach (var item in result.cartItems)
-                {
-                    var response = await fetchItemCost(item);
-                    item.itemcost = response.itemcost;
-                    result.totalCost += item.itemquantity * item.itemcost;
+                    foreach (var item in result.cartItems)
+                    {
+                        var response = await fetchItemCost(item);
+                        item.itemcost = response.itemcost;
+                        result.totalCost += item.itemquantity * item.itemcost;
+                    }
                 }
 
                 return Ok(result);
@@ -167,13 +164,12 @@ namespace Ecommerce.Cart.API.Controllers
             {
                 string catalogUrl = _config["CatalogUrl"] + "/" + cartItem.itemid;
                 HttpClient httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var token = await fetchToken();
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var response = await httpClient.GetAsync(catalogUrl);
                 response.EnsureSuccessStatusCode();
                 var output = JObject.Parse(await response.Content.ReadAsStringAsync());
-                cartItem.itemcost = Double.Parse(output.Value<string>("discountedPrice"));
+                cartItem.itemcost = double.Parse(output.Value<string>("discountedPrice"));
                 return cartItem;
             }
             catch (Exception ex)
@@ -188,8 +184,7 @@ namespace Ecommerce.Cart.API.Controllers
             string identityUrl = _config["IdentityUrl"];
             HttpClient client = new HttpClient();
             var body = new { username = "string", password = "string" };
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = await client.PostAsync(identityUrl, new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync(identityUrl, new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
             var output = JObject.Parse(await response.Content.ReadAsStringAsync());
             return output.Value<string>("jwtToken");

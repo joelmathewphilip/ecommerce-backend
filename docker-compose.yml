@@ -55,6 +55,7 @@ services:
     environment:
       'MongoDbSettings:mongoHost': mongo
       'MongoDbSettings:mongoPassword': '12345'
+      'ASPNETCORE_ENVIRONMENT': 'Development'
       'MongoDbSettings:mongoPort': '27017'
       'CouponService:Url': 'http://discountservice:8081/api/discounts'
     networks:
@@ -75,6 +76,7 @@ services:
     environment:
       'MongoDbSettings:mongoHost': mongo
       'MongoDbSettings:mongoPassword': '12345'
+      'ASPNETCORE_ENVIRONMENT': 'Development'
       'MongoDbSettings:mongoPort': '27017'
     networks:
       - ecommerce.backend
@@ -124,14 +126,16 @@ services:
       'RabbitMqSettings:username': 'guest'
       'RabbitMqSettings:hostname': 'rabbitmq'
       'RabbitMqSettings:port': '5672'
-      'IdentityUrl': 'http://localhost:5000/api/Identity/login'
-      'CatalogUrl': 'http://localhost:5002/api/CatalogItems/items'
+      'IdentityUrl': 'http://identityservice:5000/api/Identity/login'
+      'CatalogUrl': 'http://catalogservice:5002/api/CatalogItems/items'
     networks:
       - ecommerce.backend
     depends_on:
       - postgresdb
       - rabbitmq
       - orderingservice
+      - identityservice
+      - catalogservice
 
   orderingservice:
     container_name: orderingservice-v1
@@ -147,7 +151,7 @@ services:
       'PostgresDbSettings:postgresPassword': '12345'
       'PostgresDbSettings:postgresUser': 'postgres'
       'PostgresDbSettings:postgresPort': '5432'
-      'ASPNETCORE_ENVIRONMENT': 'Development'
+      #'ASPNETCORE_ENVIRONMENT': 'Development'
     networks:
       - ecommerce.backend
     depends_on:
@@ -163,7 +167,6 @@ services:
       'MONGODB_PORTNUMBER': '27017'
       'MONGODB_HOST': mongo
       'MONGO_DB_NAME': 'ecommerce'
-
     ports:
       - "8081:8081"
     networks:

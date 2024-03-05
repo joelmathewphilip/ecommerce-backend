@@ -138,7 +138,7 @@ namespace Ecommerce.Cart.API.Repository
             catch (Exception ex)
             {
                 _logger.LogError("Error while fetching details from Cart", ex);
-                throw;
+                throw new Exception("Error fetching details from CartDb");
             }
 
         }
