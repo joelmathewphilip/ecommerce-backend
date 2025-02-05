@@ -119,7 +119,10 @@ builder.Services.AddMassTransit(bus =>
     {
         EndpointConvention.Map<AccountCreationEvent>(new Uri("queue:"+builder.Configuration.GetSection(Constants.CartServiceQueueName).Get<string>()));
         string connString = builder.Configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>().connString;
+        if(!string.IsNullOrWhiteSpace(connString))
+        {
         factoryConfigurator.Host(new Uri(connString));
+        }
     });
 });
 

@@ -1,10 +1,15 @@
-﻿using Ecommerce.Account.API.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Ecommerce.Account.API.Interfaces;
 using Ecommerce.Account.API.Model;
 using Ecommerce.Shared.Models;
 using EventBus.Messages.Events;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 namespace Ecommerce.Account.API.Controllers

@@ -1,4 +1,7 @@
-﻿using Ecommerce.Account.API.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Ecommerce.Account.API.Model;
 
 namespace Ecommerce.Account.API.Interfaces
 {

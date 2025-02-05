@@ -2,6 +2,7 @@ version: '3.8'
 networks:
   ecommerce.backend:
     name: ecommerce.backend
+    driver: bridge
 
 services:
   mongo:
@@ -173,6 +174,20 @@ services:
       - ecommerce.backend
     depends_on: 
       - mongo
+  
+  ecommercefrontendservice:
+    container_name: ecommercefrontendservice-v1
+    image: ecommerce-frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - ecommerce.backend
+    environment:
+      'REACT_APP_IDENTITY_LOGIN_URL': 'http://identityservice-v1:5000/api/identity/login'
+      'REACT_APP_IDENTITY_REGISTRATION_URL': 'http://identityservice:5000/api/identity/register'
+      'REACT_APP_CATALOG_ITEMS_URL': 'http://catalogservice:5002/api/CatalogItems/items'
+      'REACT_APP_ACCOUNT_URL': 'http://accountservice:5004/api/Account/users'
+      'REACT_APP_CART_URL': 'http://cartservice:5008/api/v1/cart'
 
 volumes:
   ecommerce_data:

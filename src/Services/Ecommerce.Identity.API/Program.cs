@@ -79,8 +79,8 @@ app.UseSwaggerUI(c =>
     //'https://localhost:<port>/<routeprefix>/api/identity/swagger/{documentname}/swagger.json' url
     c.RoutePrefix = "api/identity/swagger";
 });
-app.UseCors("AllowAnyOrigin");
 
+app.UseCors("AllowAnyOrigin");
 app.UseRouting();
 app.UseHttpsRedirection();
 app.UseAuthorization();
