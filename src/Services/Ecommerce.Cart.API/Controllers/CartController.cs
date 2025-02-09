@@ -175,7 +175,7 @@ namespace Ecommerce.Cart.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("An error occured while fetching catalog Costs: " + ex.Message);
-                throw new Exception("Failed to fetch CatalogCost");
+                throw new Exception("Failed to fetch CatalogCost: "+ ex.Message + ex.StackTrace);
             }
 
         }

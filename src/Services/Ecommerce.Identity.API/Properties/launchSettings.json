@@ -1,14 +1,23 @@
 {
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:6417",
+      "sslPort": 44360
+    }
+  },
   "profiles": {
     "Ecommerce.Identity.API": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/identity/swagger",
+      "applicationUrl": "https://localhost:7013;http://localhost:5165",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7013;http://localhost:5165"
+      "dotnetRunMessages": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -22,19 +31,9 @@
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-      "publishAllPorts": true,
-      //"useSSL": true,
-      //"sslPort": 7105,
-      "httpPort": 7104
-    }
-  },
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:6417",
-      "sslPort": 44360
+      "environmentVariables": {},
+      "httpPort": 7104,
+      "publishAllPorts": true
     }
   }
 }

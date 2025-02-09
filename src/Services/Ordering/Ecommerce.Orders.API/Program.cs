@@ -25,7 +25,7 @@ var postgresDbSettings = builder.Configuration.GetSection(nameof(PostgresDbSetti
 builder.Services.AddInfrastructureServices(builder.Configuration,postgresDbSettings);
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogAPI", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "OrdersAPI", Version = "v1" });
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,

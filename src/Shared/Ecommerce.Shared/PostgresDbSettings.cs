@@ -21,7 +21,7 @@ namespace Ecommerce.Shared
         {
             get
             {
-                return $"Server = {postgresHost}; Port = {postgresPort}; Database = {postgresDb}; User Id = {postgresUser}; Password = {postgresPassword};";
+                return $"Server = {postgresHost}; Port = {postgresPort}; Database = {postgresDb}; User Id = {postgresUser}; Password = {postgresPassword};Timeout=100;CommandTimeout=100";
 
             }
         }

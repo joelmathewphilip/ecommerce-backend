@@ -1,4 +1,12 @@
 {
+  "IIS Express": {
+    "commandName": "IISExpress",
+    "launchBrowser": true,
+    "launchUrl": "api/catalog/v1/swagger",
+    "environmentVariables": {
+      "ASPNETCORE_ENVIRONMENT": "Development"
+    }
+  },
   "profiles": {
     "Catalog.API": {
       "commandName": "Project",
@@ -9,13 +17,5 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "api/catalog/v1/swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    }
   }
+}
